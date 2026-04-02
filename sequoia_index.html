@@ -1,0 +1,2673 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sequoia">
+<meta name="theme-color" content="#FFFFFF">
+<title>Sequoia Group S.R.L.</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#F4F4F2;--sidebar:#FFFFFF;--sidebar-h:#FBF8F8;--sidebar-a:#FDF0F1;
+  --accent:#7B1D2E;--accent-d:#621627;--accent-p:#FDF5F6;--accent-l:#F5E0E3;
+  --green:#1A6644;--green-p:#EBF5F0;--green-l:#C8E6D8;
+  --white:#FFFFFF;--text:#111;--text-2:#555;--text-3:#999;
+  --ok:#1A8A50;--ok-b:#E6F5EE;--err:#C0392B;--err-b:#FBEAE8;
+  --warn:#B8750A;--warn-b:#FDF3E0;--info:#1D4FA3;--info-b:#E8EFF9;
+  --grant:#0D6E6E;--grant-b:#E0F4F4;
+  --re:#1A6644;--re-b:#EBF5F0;--cons:#7B1D2E;--cons-b:#FDF5F6;
+  --bdr:#E0DEDD;
+  --r:10px;--r-s:7px;
+  --sh-s:0 1px 3px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);
+  --sh:0 4px 16px rgba(0,0,0,.09);--sh-l:0 12px 40px rgba(0,0,0,.16);
+  --sw:258px;--th:56px
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Lato',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:var(--sw);background:var(--sidebar);border-right:1.5px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;z-index:100;transition:transform .25s}
+.sb-logo{padding:22px 18px 16px;border-bottom:1px solid var(--bdr)}
+.sb-logo h1{font-family:'Playfair Display',serif;font-size:15px;color:var(--accent);font-weight:700}
+.sb-logo p{font-size:10px;color:var(--text-3);margin-top:3px;font-family:monospace;letter-spacing:.04em}
+.sb-nav{flex:1;padding:8px 0}
+.nav-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--text-3);padding:14px 18px 4px;font-weight:700}
+.nav-i{display:flex;align-items:center;gap:9px;padding:8px 10px;color:var(--text-2);cursor:pointer;transition:all .14s;font-size:13px;border-left:2.5px solid transparent;user-select:none;margin:1px 8px;border-radius:var(--r-s)}
+.nav-i i{font-size:13px;width:16px;text-align:center;flex-shrink:0}
+.nav-i:hover{background:var(--sidebar-h);color:var(--text)}
+.nav-i.active{background:var(--accent-p);color:var(--accent);border-left-color:var(--accent);font-weight:700}
+.nav-i.active i{color:var(--accent)}
+.sb-bot{padding:12px;border-top:1px solid var(--bdr)}
+.btn-exp{width:100%;padding:7px 10px;background:var(--accent-p);color:var(--accent);border:1px solid rgba(123,29,46,.2);border-radius:var(--r-s);cursor:pointer;font-size:11px;display:flex;align-items:center;gap:6px;justify-content:center;transition:all .14s;font-family:'Lato',sans-serif;font-weight:700;margin-bottom:6px}
+.btn-exp:hover{background:var(--accent);color:#fff}
+.sb-month{font-family:monospace;font-size:10px;color:var(--text-3);text-align:center;padding-top:4px}
+
+/* MAIN */
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{height:var(--th);background:var(--white);border-bottom:1.5px solid var(--bdr);display:flex;align-items:center;padding:0 22px;gap:12px;flex-shrink:0}
+.tb-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;flex:1}
+.mn{display:flex;align-items:center;gap:3px;background:var(--bg);padding:4px 8px;border-radius:8px;border:1px solid var(--bdr)}
+.mn button{background:none;border:none;cursor:pointer;color:var(--text-3);padding:4px 6px;border-radius:5px;font-size:13px;transition:all .1s}
+.mn button:hover{background:var(--white);color:var(--accent)}
+.mn .ml{font-family:monospace;font-size:12px;font-weight:500;min-width:110px;text-align:center}
+.content{flex:1;overflow-y:auto;padding:22px;padding-bottom:40px}
+
+/* PAGE */
+.page{display:none}.page.active{display:block}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.page-hdr h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
+.sec-t{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:10px;margin-top:4px}
+
+/* CARDS */
+.card{background:var(--white);border-radius:var(--r);padding:18px;box-shadow:var(--sh-s);border:1.5px solid var(--bdr)}
+.card-t{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);font-weight:700;margin-bottom:12px}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--white);border-radius:var(--r);padding:16px;box-shadow:var(--sh-s);border:1.5px solid var(--bdr);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
+.kpi-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-3);margin-bottom:6px;font-weight:700}
+.kpi-val{font-family:monospace;font-size:19px;font-weight:500;line-height:1.2}
+.kpi-sub{font-size:11px;color:var(--text-3);margin-top:4px;display:flex;align-items:center;gap:4px}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;font-family:monospace}
+.b-ok{background:var(--ok-b);color:var(--ok)}.b-err{background:var(--err-b);color:var(--err)}
+.b-warn{background:var(--warn-b);color:var(--warn)}.b-info{background:var(--info-b);color:var(--info)}
+.b-neu{background:var(--bg);color:var(--text-2);border:1px solid var(--bdr)}
+.b-grant{background:var(--grant-b);color:var(--grant)}
+.b-re{background:var(--re-b);color:var(--re)}.b-cons{background:var(--cons-b);color:var(--cons)}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);font-weight:700;border-bottom:2px solid var(--bdr);white-space:nowrap;background:var(--bg)}
+th.r,td.r{text-align:right}
+td{padding:8px 12px;border-bottom:1px solid var(--bdr);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--accent-p)}
+.am-p{color:var(--ok);font-family:monospace;font-size:12px}
+.am-n{color:var(--err);font-family:monospace;font-size:12px}
+.am-0{font-family:monospace;font-size:12px}
+
+/* HIERARCHY TREE TABLE */
+.tree-group td{font-weight:900;font-size:13.5px;background:var(--text)!important;color:var(--white)!important}
+.tree-group .am-p,.tree-group .am-n,.tree-group .am-0{color:var(--white)!important}
+.tree-bu td{font-weight:700;background:var(--accent-p)!important}
+.tree-prop td{font-weight:700;background:var(--green-p)!important}
+.tree-leaf td{background:var(--white)}
+.tree-leaf:hover td{background:var(--accent-p)!important}
+.tree-expand{background:none;border:none;cursor:pointer;color:var(--text-3);font-size:11px;margin-right:4px;transition:transform .15s;line-height:1;padding:0 2px}
+.tree-expand.open{transform:rotate(90deg)}
+.tree-hidden{display:none}
+
+/* FORMS */
+.fg{margin-bottom:12px}
+.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:4px}
+.fi,.fs,.fta{width:100%;padding:8px 11px;border:1.5px solid var(--bdr);border-radius:var(--r-s);background:var(--white);color:var(--text);font-size:14px;font-family:'Lato',sans-serif;transition:border-color .14s;-webkit-appearance:none;appearance:none}
+.fi:focus,.fs:focus,.fta:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(123,29,46,.1)}
+.fi.mono{font-family:monospace}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+
+/* BUTTONS */
+.btn{padding:8px 15px;border-radius:var(--r-s);border:none;font-family:'Lato',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .14s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;user-select:none}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--accent-d);box-shadow:0 3px 10px rgba(123,29,46,.3)}
+.btn-s{background:var(--white);color:var(--text);border:1.5px solid var(--bdr)}.btn-s:hover{background:var(--bg)}
+.btn-d{background:var(--err-b);color:var(--err);border:1.5px solid rgba(192,57,43,.2)}.btn-d:hover{background:var(--err);color:#fff}
+.btn.sm{padding:5px 10px;font-size:12px}
+.btn-ico{width:28px;height:28px;padding:0;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:var(--text-3);transition:all .1s;font-size:13px}
+.btn-ico:hover{background:var(--err-b);color:var(--err)}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.modal{background:var(--white);border-radius:12px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:var(--sh-l);border:1.5px solid var(--bdr)}
+.modal-h{padding:18px 18px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.modal-h h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--accent)}
+.modal-h button{background:none;border:none;cursor:pointer;color:var(--text-3);font-size:18px;line-height:1}
+.modal-h button:hover{color:var(--text)}
+.modal-b{padding:18px}
+.modal-f{padding:12px 18px;border-top:1px solid var(--bdr);display:flex;gap:8px;justify-content:flex-end}
+
+/* TABS */
+.tabs{display:flex;gap:2px;background:var(--bg);padding:3px;border-radius:8px;border:1.5px solid var(--bdr);margin-bottom:16px;flex-wrap:wrap}
+.tab{flex:1;padding:6px 10px;border:none;background:transparent;cursor:pointer;border-radius:6px;font-family:'Lato',sans-serif;font-size:12px;font-weight:700;color:var(--text-2);transition:all .14s;white-space:nowrap;min-width:0}
+.tab.active{background:var(--white);color:var(--accent);box-shadow:var(--sh-s)}
+
+/* PROGRESS */
+.prog-wrap{background:var(--bdr);border-radius:3px;height:5px;overflow:hidden;margin-top:5px}
+.prog-bar{height:100%;border-radius:3px;transition:width .4s}
+.prog-ok{background:var(--ok)}.prog-warn{background:var(--warn)}.prog-err{background:var(--accent)}
+
+/* ALERTS */
+.alert{padding:10px 13px;border-radius:var(--r-s);font-size:13px;display:flex;align-items:flex-start;gap:8px;margin-bottom:13px}
+.alert i{margin-top:1px;flex-shrink:0}
+.alert-info{background:var(--info-b);color:#1a3f6f;border:1px solid #a8c8f0}
+.alert-warn{background:var(--warn-b);color:#7a4f0d;border:1px solid #f5d99a}
+.alert-ok{background:var(--ok-b);color:#155733;border:1px solid #a8e6c3}
+.alert-grant{background:var(--grant-b);color:#0D6E6E;border:1px solid #7DD4D4}
+
+/* CHIPS */
+.chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:5px;font-size:11px;font-weight:700;background:var(--bg);color:var(--text-2);border:1px solid var(--bdr)}
+
+/* MISC */
+.divider{height:1px;background:var(--bdr);margin:14px 0}
+.empty{text-align:center;padding:36px 18px;color:var(--text-3)}
+.empty i{font-size:32px;display:block;margin-bottom:8px;color:var(--bdr)}
+.empty p{font-size:13px}
+.note{font-size:11.5px;color:var(--text-3);line-height:1.5}
+.row-del{opacity:0;transition:opacity .1s}
+tr:hover .row-del{opacity:1}
+.tag-inc{background:var(--ok-b);color:#155733;border-radius:4px;font-size:11px;font-weight:700;padding:2px 6px}
+.tag-exp{background:var(--err-b);color:#7a1e1e;border-radius:4px;font-size:11px;font-weight:700;padding:2px 6px}
+.tag-grant{background:var(--grant-b);color:var(--grant);border-radius:4px;font-size:11px;font-weight:700;padding:2px 6px}
+
+/* RESPONSIVE */
+@media(max-width:720px){
+  .sidebar{position:fixed;left:0;top:0;height:100%;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .menu-btn{display:flex !important}
+  .fr,.fr3{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+}
+.menu-btn{display:none;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-2);padding:5px;border-radius:7px}
+.menu-btn:hover{background:var(--bg)}
+.overlay-sb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:99}
+.overlay-sb.open{display:block}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="overlay-sb" id="sbOverlay" onclick="closeSb()"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <h1>Sequoia Group S.R.L.</h1>
+    <p>Real Estate · Consulting · EUR</p>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-lbl">Overview</div>
+    <div class="nav-i active" onclick="nav('dashboard')"><i class="bi bi-grid-1x2-fill"></i> Dashboard</div>
+    <div class="nav-i" onclick="nav('plgroup')"><i class="bi bi-file-earmark-bar-graph-fill"></i> P&amp;L SequoiaGroup</div>
+    <div class="nav-i" onclick="nav(&quot;cashflow&quot;)"><i class="bi bi-arrow-left-right"></i> Cash Flow</div>
+    <div class="nav-lbl">Gestione</div>
+    <div class="nav-i" onclick="nav('budget')"><i class="bi bi-sliders2-vertical"></i> Budget</div>
+    <div class="nav-i" onclick="nav('transactions')"><i class="bi bi-pencil-square"></i> Registrazioni</div>
+    <div class="nav-i" onclick="nav('variances')"><i class="bi bi-bar-chart-steps"></i> Scostamenti</div>
+    <div class="nav-lbl">Finanziario</div>
+    <div class="nav-i" onclick="nav(&quot;loans&quot;)"><i class="bi bi-bank2"></i> Finanziamenti Soci</div>
+    <div class="nav-lbl">Fisco</div>
+    <div class="nav-i" onclick="nav('tax')"><i class="bi bi-building-fill"></i> IRES / IRAP</div>
+    <div class="nav-lbl">Configurazione</div>
+    <div class="nav-i" onclick="nav('struttura')"><i class="bi bi-diagram-2-fill"></i> Struttura</div>
+    <div class="nav-i" onclick="nav('settings')"><i class="bi bi-gear-fill"></i> Impostazioni</div>
+  </div>
+  <div class="sb-bot">
+    <button class="btn-exp" onclick="exportData()"><i class="bi bi-download"></i> Esporta JSON</button>
+    <button class="btn-exp" onclick="importClick()" style="margin-top:5px"><i class="bi bi-upload"></i> Importa JSON</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <div class="sb-month" id="sbDate"></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main-area">
+  <div class="topbar">
+    <button class="menu-btn" onclick="openSb()"><i class="bi bi-list"></i></button>
+    <div class="tb-title" id="pageTitle">Dashboard</div>
+    <div class="mn">
+      <button onclick="prevMonth()"><i class="bi bi-chevron-left"></i></button>
+      <span class="ml" id="monthLabel"></span>
+      <button onclick="nextMonth()"><i class="bi bi-chevron-right"></i></button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-hdr" style="margin-bottom:12px">
+        <h2>Dashboard</h2>
+        <button class="btn btn-s sm" onclick="openDashConfig()"><i class="bi bi-sliders2"></i> Configura</button>
+      </div>
+      <div class="kpi-grid" id="dash-kpis"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px" id="dash-bu-row">
+        <div class="card" id="dash-re-card"></div>
+        <div class="card" id="dash-cons-card"></div>
+      </div>
+      <div class="card" id="dash-expense-card"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px" id="dash-bottom-row">
+        <div class="card" id="dash-loans-card"></div>
+        <div class="card" id="dash-cf-card"></div>
+      </div>
+    </div>
+
+    <!-- DASH CONFIG PANEL -->
+    <div class="overlay" id="dashConfigModal">
+      <div class="modal" style="max-width:460px">
+        <div class="modal-h">
+          <h3>Configura Dashboard</h3>
+          <button onclick="closeDashConfig()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-b">
+          <div class="card-t">KPI da mostrare</div>
+          <div id="dashKpiToggles" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px"></div>
+          <div class="card-t">Sezioni</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="dshRE" style="width:15px;height:15px;accent-color:var(--accent)"><span>Tabella Real Estate</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="dshCons" style="width:15px;height:15px;accent-color:var(--accent)"><span>Tabella Consulting</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="dshExp" style="width:15px;height:15px;accent-color:var(--accent)"><span>Tabella Costi</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="dshLoans" style="width:15px;height:15px;accent-color:var(--accent)"><span>Finanziamenti Soci</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="dshCF" style="width:15px;height:15px;accent-color:var(--accent)"><span>Cash Flow (mini)</span></label>
+          </div>
+        </div>
+        <div class="modal-f">
+          <button class="btn btn-s" onclick="closeDashConfig()">Annulla</button>
+          <button class="btn btn-p" onclick="saveDashConfig()"><i class="bi bi-check2"></i> Applica</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOANS -->
+    <div class="page" id="page-loans">
+      <div class="page-hdr">
+        <h2>Finanziamenti Soci</h2>
+        <button class="btn btn-p sm" onclick="openLoanModal()"><i class="bi bi-plus-lg"></i> Nuovo Finanziamento</button>
+      </div>
+      <div id="loans-content"></div>
+    </div>
+
+    <!-- PL SEQUOIAGROUP -->
+    <div class="page" id="page-plgroup">
+      <div class="page-hdr">
+        <h2>P&amp;L SequoiaGroup</h2>
+        <div style="display:flex;gap:6px">
+          <select class="fs" id="plgroup-period" onchange="renderPLGroup()" style="padding:6px 12px;font-size:12px;width:auto">
+            <option value="month">Mese corrente</option>
+            <option value="ytd">YTD (anno in corso)</option>
+            <option value="year">Anno completo</option>
+          </select>
+          <button class="btn btn-s sm" onclick="openFinSettings()"><i class="bi bi-gear-fill"></i> Ammort. &amp; Finanza</button>
+        </div>
+      </div>
+      <div id="plgroup-content"></div>
+    </div>
+
+    <!-- BUDGET -->
+    <div class="page" id="page-budget">
+      <div class="page-hdr">
+        <h2>Budget</h2>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-s sm" onclick="copyBudget()"><i class="bi bi-copy"></i> Copia mese prec.</button>
+          <button class="btn btn-p sm" onclick="saveBudget()"><i class="bi bi-check2"></i> Salva</button>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="budgetTab('income',this)"><i class="bi bi-buildings-fill"></i> Ricavi per Entità</button>
+        <button class="tab" onclick="budgetTab('expense',this)"><i class="bi bi-dash-circle-fill"></i> Costi per Categoria</button>
+      </div>
+      <div id="budget-panel"></div>
+    </div>
+
+    <!-- TRANSACTIONS -->
+    <div class="page" id="page-transactions">
+      <div class="page-hdr">
+        <h2>Registrazioni</h2>
+        <button class="btn btn-p" onclick="openTxModal()"><i class="bi bi-plus-lg"></i> Nuova</button>
+      </div>
+      <div class="tabs" id="tx-filter-tabs">
+        <button class="tab active" onclick="filterTx('all',this)">Tutte</button>
+        <button class="tab" onclick="filterTx('income',this)">Ricavi</button>
+        <button class="tab" onclick="filterTx('expense',this)">Costi</button>
+        <button class="tab" onclick="filterTx('re',this)"><span class="b-re badge">RE</span></button>
+        <button class="tab" onclick="filterTx('cons',this)"><span class="b-cons badge">CONS</span></button>
+      </div>
+      <div class="card"><div class="tbl-wrap" id="tx-table"></div></div>
+    </div>
+
+    <!-- VARIANCES -->
+    <div class="page" id="page-variances">
+      <div class="page-hdr"><h2>Scostamenti Budget vs Actual</h2></div>
+      <div id="variance-content"></div>
+    </div>
+
+    <!-- CASH FLOW -->
+    <div class="page" id="page-cashflow">
+      <div class="page-hdr"><h2>Cash Flow Forecast</h2></div>
+      <div id="cf-content"></div>
+    </div>
+    <!-- TAX -->
+    <div class="page" id="page-tax">
+      <div class="page-hdr">
+        <h2>IRES / IRAP</h2>
+        <button class="btn btn-p sm" onclick="renderTax()"><i class="bi bi-arrow-clockwise"></i> Ricalcola</button>
+      </div>
+      <div id="tax-content"></div>
+    </div>
+
+    <!-- STRUTTURA -->
+    <div class="page" id="page-struttura">
+      <div class="page-hdr">
+        <h2>Struttura Aziendale</h2>
+        <button class="btn btn-p sm" onclick="openEntityModal()"><i class="bi bi-plus-lg"></i> Aggiungi Entità</button>
+      </div>
+      <div id="struttura-content"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="page-hdr"><h2>Impostazioni</h2></div>
+      <div id="settings-content"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- TRANSACTION MODAL -->
+<div class="overlay" id="txModal">
+  <div class="modal">
+    <div class="modal-h">
+      <h3 id="txTitle">Nuova Registrazione</h3>
+      <button onclick="closeTxModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-b">
+      <div class="fg">
+        <label class="fl">Tipo</label>
+        <div class="tabs" style="margin-bottom:0">
+          <button class="tab active" id="txTypeInc" onclick="setTxType('income',this)">Ricavo</button>
+          <button class="tab" id="txTypeExp" onclick="setTxType('expense',this)">Costo</button>
+        </div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Data</label><input type="date" class="fi" id="txDate"></div>
+        <div class="fg"><label class="fl">Importo (€)</label><input type="number" class="fi mono" id="txAmount" placeholder="0.00" step="0.01" min="0"></div>
+      </div>
+      <div class="fr">
+        <div class="fg">
+          <label class="fl">Entità</label>
+          <select class="fs" id="txEntity" onchange="onTxEntityChange()"></select>
+        </div>
+        <div class="fg"><label class="fl">Categoria</label><select class="fs" id="txCategory"></select></div>
+      <div id="txGrantHint" class="alert alert-grant" style="display:none;margin-top:-6px;margin-bottom:10px;padding:8px 12px;font-size:12px">
+        <i class="bi bi-award-fill"></i> Entità immobile selezionata — puoi registrare il <strong>Contributo a Fondo Perduto ★ Tax-free</strong>.
+      </div>
+      </div>
+      <div class="fg"><label class="fl">Descrizione</label><input type="text" class="fi" id="txDesc" placeholder="es. Check-in — 3 notti"></div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Cliente / Fornitore</label><input type="text" class="fi" id="txSource" placeholder="es. Mario Rossi"></div>
+        <div class="fg">
+          <label class="fl">Metodo Pagamento</label>
+          <select class="fs" id="txMethod">
+            <option>Bonifico</option><option>Carta di Credito</option><option>Contanti</option><option>Airbnb/OTA</option><option>Addebito Diretto</option>
+          </select>
+        </div>
+      </div>
+      <input type="hidden" id="txEditId">
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-s" onclick="closeTxModal()">Annulla</button>
+      <button class="btn btn-p" onclick="saveTx()"><i class="bi bi-check2"></i> Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- ENTITY MODAL -->
+<div class="overlay" id="entityModal">
+  <div class="modal">
+    <div class="modal-h">
+      <h3 id="entityModalTitle">Aggiungi Entità</h3>
+      <button onclick="closeEntityModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-b">
+      <div class="fg"><label class="fl">Nome</label><input type="text" class="fi" id="entName" placeholder="es. Apt 6 / Cliente 6 / Nuovo Immobile"></div>
+      <div class="fr">
+        <div class="fg">
+          <label class="fl">Tipo</label>
+          <select class="fs" id="entType">
+            <option value="unit">Unità / Appartamento</option>
+            <option value="client">Cliente Consulting</option>
+            <option value="property">Immobile</option>
+            <option value="bu">Business Unit</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Entità Padre</label>
+          <select class="fs" id="entParent"></select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Note</label><input type="text" class="fi" id="entNotes" placeholder="es. Piano terra, 45mq"></div>
+      <input type="hidden" id="entEditId">
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-s" onclick="closeEntityModal()">Annulla</button>
+      <button class="btn btn-p" onclick="saveEntity()"><i class="bi bi-check2"></i> Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="overlay" id="catModal">
+  <div class="modal">
+    <div class="modal-h">
+      <h3 id="catModalTitle">Nuova Categoria</h3>
+      <button onclick="closeCatModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-b">
+      <div class="fr">
+        <div class="fg">
+          <label class="fl">Tipo</label>
+          <select class="fs" id="catType" onchange="onCatTypeChange()">
+            <option value="income">Ricavo</option>
+            <option value="expense">Costo</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Business Unit</label>
+          <select class="fs" id="catBU">
+            <option value="re">Real Estate</option>
+            <option value="cons">Consulting</option>
+            <option value="shared">Shared / Group</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Nome</label><input type="text" class="fi" id="catLabel" placeholder="es. Affitto Stagionale"></div>
+      <div class="fr">
+        <div class="fg">
+          <label class="fl">Icona</label>
+          <div style="display:flex;gap:6px;align-items:center">
+            <div id="catIconPreview" style="width:36px;height:36px;border-radius:6px;background:var(--bg);border:1.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i id="catIconPreviewI" class="bi bi-tag-fill" style="font-size:18px;color:#607D8B"></i>
+            </div>
+            <input type="text" class="fi" id="catIcon" placeholder="bi-tag-fill" value="bi-tag-fill" oninput="updateCatIconPreview()" style="flex:1">
+          </div>
+          <button type="button" class="btn btn-s sm" onclick="toggleIconPicker()" style="margin-top:6px;width:100%"><i class="bi bi-grid-3x3-gap-fill"></i> Sfoglia icone</button>
+          <div id="iconPickerGrid" style="display:none;margin-top:8px;background:var(--bg);border-radius:var(--r-s);border:1px solid var(--bdr);padding:8px">
+            <input type="text" class="fi" id="iconSearch" placeholder="Cerca icona..." oninput="filterIcons()" style="margin-bottom:8px;padding:6px 10px">
+            <div style="max-height:180px;overflow-y:auto"><div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px" id="iconPickerInner"></div></div>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">Colore</label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="color" class="fi" id="catColor" value="#2D6A4F" style="padding:4px;height:40px;cursor:pointer;flex:1" oninput="updateCatIconPreview()">
+          </div>
+        </div>
+      </div>
+      <div class="fg" id="catTaxFreeRow" style="display:none">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="catTaxFree" style="width:16px;height:16px;accent-color:var(--grant)">
+          <span style="font-size:13px">Contributo a fondo perso (detassato — escluso da IRES/IRAP)</span>
+        </label>
+      </div>
+      <input type="hidden" id="catEditId">
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-s" onclick="closeCatModal()">Annulla</button>
+      <button class="btn btn-p" onclick="saveCat()"><i class="bi bi-check2"></i> Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIN SETTINGS MODAL -->
+<div class="overlay" id="finSettingsModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-h">
+      <h3>Ammortamenti &amp; Oneri Finanziari</h3>
+      <button onclick="closeFinSettings()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-b">
+      <div class="alert alert-info"><i class="bi bi-info-circle-fill"></i>Questi valori vengono usati solo nel P&amp;L Completo per calcolare EBIT e Utile Netto.</div>
+      <div class="fg">
+        <label class="fl">Ammortamenti Annui (€)</label>
+        <input type="number" class="fi mono" id="finAmm" placeholder="0" step="100">
+        <div class="note" style="margin-top:4px">Ripartito automaticamente su 12 mesi</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Oneri Finanziari Mensili (€)</label>
+        <input type="number" class="fi mono" id="finOneri" placeholder="0" step="10">
+        <div class="note" style="margin-top:4px">Interessi passivi e altri costi finanziari non già registrati</div>
+      </div>
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-s" onclick="closeFinSettings()">Annulla</button>
+      <button class="btn btn-p" onclick="saveFinSettings()"><i class="bi bi-check2"></i> Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOAN MODAL -->
+<div class="overlay" id="loanModal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-h">
+      <h3 id="loanModalTitle">Nuovo Finanziamento</h3>
+      <button onclick="closeLoanModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-b">
+      <div class="fr">
+        <div class="fg"><label class="fl">Data Erogazione</label><input type="date" class="fi" id="loanDate"></div>
+        <div class="fg"><label class="fl">Importo (€)</label><input type="number" class="fi mono" id="loanAmount" placeholder="0.00" step="100" min="0"></div>
+      </div>
+      <div class="fg"><label class="fl">Note</label><input type="text" class="fi" id="loanNotes" placeholder="es. Prima tranche — copertura capex avvio"></div>
+      <div class="divider"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="fl" style="margin:0">Piano di Restituzione</div>
+        <button class="btn btn-s sm" onclick="addRepaymentRow()"><i class="bi bi-plus-lg"></i> Aggiungi Rata</button>
+      </div>
+      <div id="repaymentRows"></div>
+      <input type="hidden" id="loanEditId">
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-s" onclick="closeLoanModal()">Annulla</button>
+      <button class="btn btn-p" onclick="saveLoan()"><i class="bi bi-check2"></i> Salva</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONSTANTS
+// ============================================================
+const STORE_KEY = 'sequoia_v2';
+
+const DEFAULT_ENTITIES = [
+  {id:'group', name:'Sequoia Group S.R.L.', type:'group',    parentId:null,    bu:'group'},
+  {id:'re',    name:'Sequoia Real Estate',  type:'bu',       parentId:'group', bu:'re'},
+  {id:'cons',  name:'Sequoia Consulting',   type:'bu',       parentId:'group', bu:'cons'},
+  {id:'cjase', name:'Cjase 1893',           type:'property', parentId:'re',    bu:'re', notes:'5 appartamenti'},
+  {id:'apt1',  name:'Apt 1',               type:'unit',     parentId:'cjase', bu:'re', unitType:'affitto_breve'},
+  {id:'apt2',  name:'Apt 2',               type:'unit',     parentId:'cjase', bu:'re', unitType:'affitto_breve'},
+  {id:'apt3',  name:'Apt 3',               type:'unit',     parentId:'cjase', bu:'re', unitType:'affitto_breve'},
+  {id:'apt4',  name:'Apt 4',               type:'unit',     parentId:'cjase', bu:'re', unitType:'affitto_breve'},
+  {id:'apt5',  name:'Apt 5',               type:'unit',     parentId:'cjase', bu:'re', unitType:'affitto_breve'},
+  {id:'cli1',  name:'Cliente 1',           type:'client',   parentId:'cons',  bu:'cons'},
+  {id:'cli2',  name:'Cliente 2',           type:'client',   parentId:'cons',  bu:'cons'},
+  {id:'cli3',  name:'Cliente 3',           type:'client',   parentId:'cons',  bu:'cons'},
+  {id:'cli4',  name:'Cliente 4',           type:'client',   parentId:'cons',  bu:'cons'},
+  {id:'cli5',  name:'Cliente 5',           type:'client',   parentId:'cons',  bu:'cons'},
+];
+
+const DEFAULT_INCOME_CATS = [
+  {id:'affitto_breve',  label:'Affitto Breve',          icon:'bi-calendar-check-fill', color:'#2D6A4F', bu:'re',   taxFree:false},
+  {id:'affitto_lungo',  label:'Affitto Lungo',           icon:'bi-house-fill',          color:'#40916C', bu:'re',   taxFree:false},
+  {id:'contributo_reg', label:'Contributo Regionale',    icon:'bi-award-fill',          color:'#0D6E6E', bu:'re',   taxFree:true},
+  {id:'re_other',       label:'Altri Ricavi RE',         icon:'bi-building',            color:'#1B4332', bu:'re',   taxFree:false},
+  {id:'retainer',       label:'Retainer Fee',            icon:'bi-person-workspace',    color:'#8B5E1A', bu:'cons', taxFree:false},
+  {id:'project_fee',    label:'Project Fee',             icon:'bi-briefcase-fill',      color:'#A67C3A', bu:'cons', taxFree:false},
+  {id:'success_fee',    label:'Success Fee',             icon:'bi-trophy-fill',         color:'#C8963C', bu:'cons', taxFree:false},
+  {id:'cons_other',     label:'Altri Ricavi Consulting', icon:'bi-graph-up-arrow',      color:'#D4A853', bu:'cons', taxFree:false},
+  {id:'other_inc',      label:'Altri Ricavi Group',      icon:'bi-plus-circle-fill',    color:'#607D8B', bu:'shared', taxFree:false},
+];
+
+const DEFAULT_EXPENSE_CATS = [
+  {id:'pulizie',         label:'Pulizie & Lavanderia',    icon:'bi-stars',              color:'#2D6A4F', bu:'re'},
+  {id:'ota_comm',        label:'Commissioni OTA',         icon:'bi-percent',            color:'#40916C', bu:'re'},
+  {id:'manutenzione',    label:'Manutenzione RE',         icon:'bi-tools',              color:'#52B788', bu:'re'},
+  {id:'utenze_re',       label:'Utenze RE',               icon:'bi-lightning-fill',     color:'#1B4332', bu:'re'},
+  {id:'travel',          label:'Viaggi & Trasferte',      icon:'bi-airplane-fill',      color:'#8B5E1A', bu:'cons'},
+  {id:'rappresentanza',  label:'Rappresentanza',          icon:'bi-cup-hot-fill',       color:'#A67C3A', bu:'cons'},
+  {id:'personnel',       label:'Personale',               icon:'bi-people-fill',        color:'#D43B3B', bu:'shared'},
+  {id:'office',          label:'Uffici & Sede',           icon:'bi-building-fill',      color:'#E07A2D', bu:'shared'},
+  {id:'legal_acc',       label:'Legale & Commercialista', icon:'bi-person-badge-fill',  color:'#3174D4', bu:'shared'},
+  {id:'it_sw',           label:'IT & Software',           icon:'bi-laptop-fill',        color:'#17A2B8', bu:'shared'},
+  {id:'marketing',       label:'Marketing',               icon:'bi-megaphone-fill',     color:'#9B59B6', bu:'shared'},
+  {id:'insurance',       label:'Assicurazioni',           icon:'bi-shield-fill-check',  color:'#8E44AD', bu:'shared'},
+  {id:'bank_charges',    label:'Oneri Bancari',           icon:'bi-bank2',              color:'#E74C3C', bu:'shared'},
+  {id:'tax_payment',     label:'Imposte Pagate',          icon:'bi-receipt',            color:'#C0392B', bu:'shared'},
+  {id:'other_exp',       label:'Altri Costi',             icon:'bi-three-dots',         color:'#78909C', bu:'shared'},
+];
+
+// ============================================================
+// DATABASE
+// ============================================================
+function defaultDB() {
+  return {
+    entities: JSON.parse(JSON.stringify(DEFAULT_ENTITIES)),
+    incomeCategories: JSON.parse(JSON.stringify(DEFAULT_INCOME_CATS)),
+    expenseCategories: JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS)),
+    transactions: [],
+    // budgets[ym][entityId][type][catId] = amount
+    budgets: {},
+    // expBudgets[ym][bu][catId] = amount  (budget costi per BU → categoria)
+    expBudgets: {},
+    dashConfig: {
+      kpis: ['groupInc','reInc','grants','consInc','groupExp','ebitda'],
+      showRECard: true,
+      showConsCard: true,
+      showExpCard: true,
+      showLoans: true,
+      showCashflow: true
+    },
+    // loans: finanziamenti infruttiferi del socio unico
+    // [{id, date, amount, notes, repayments:[{id,date,amount,paid}]}]
+    loans: [],
+    taxSettings: { iresRate: 24, irapRate: 3.9 },
+    finSettings: { ammortamentiAnnui: 0, oneriFinanziari: 0 },
+    settings: { companyName: 'Sequoia Group S.R.L.', bankBalance: 0, bankBalanceDate: today() }
+  };
+}
+
+function loadDB() {
+  try {
+    const r = localStorage.getItem(STORE_KEY);
+    if (r) {
+      const d = JSON.parse(r);
+      if (!d.entities) d.entities = JSON.parse(JSON.stringify(DEFAULT_ENTITIES));
+      if (!d.incomeCategories) d.incomeCategories = JSON.parse(JSON.stringify(DEFAULT_INCOME_CATS));
+      if (!d.expenseCategories) d.expenseCategories = JSON.parse(JSON.stringify(DEFAULT_EXPENSE_CATS));
+      if (!d.expBudgets) d.expBudgets = {};
+      if (!d.taxSettings) d.taxSettings = { iresRate: 24, irapRate: 3.9 };
+      if (!d.finSettings) d.finSettings = { ammortamentiAnnui: 0, oneriFinanziari: 0 };
+      if (!d.loans) d.loans = [];
+      if (!d.dashConfig) d.dashConfig = { kpis:['groupInc','reInc','grants','consInc','groupExp','ebitda'], showRECard:true, showConsCard:true, showExpCard:true, showLoans:true, showCashflow:true };
+      if (d.dashConfig.showLoans === undefined) d.dashConfig.showLoans = true;
+      if (d.dashConfig.showCashflow === undefined) d.dashConfig.showCashflow = true;
+      // ensure taxFree flag on income cats
+      d.incomeCategories.forEach(c => { if (c.taxFree === undefined) c.taxFree = false; });
+      return d;
+    }
+  } catch(e) {}
+  return defaultDB();
+}
+
+let DB = loadDB();
+function save() { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+
+// ============================================================
+// ENTITY TREE
+// ============================================================
+function getEntity(id) { return DB.entities.find(e => e.id === id); }
+function getChildren(parentId) { return DB.entities.filter(e => e.parentId === parentId); }
+function isLeafEntity(id) { return getChildren(id).length === 0; }
+
+function getAllDescendants(id) {
+  const children = getChildren(id);
+  if (!children.length) return [];
+  return children.concat(children.flatMap(c => getAllDescendants(c.id)));
+}
+
+function getLeafEntities(id) {
+  if (isLeafEntity(id)) return [getEntity(id)].filter(Boolean);
+  return getAllDescendants(id).filter(e => isLeafEntity(e.id));
+}
+
+function entityBU(id) {
+  const e = getEntity(id);
+  if (!e) return 'shared';
+  return e.bu || 'shared';
+}
+
+function entityPath(id) {
+  const e = getEntity(id);
+  if (!e) return id;
+  if (!e.parentId || e.parentId === 'group') return e.name;
+  const parent = getEntity(e.parentId);
+  if (!parent || parent.type === 'group') return e.name;
+  return parent.name + ' / ' + e.name;
+}
+
+// ============================================================
+// AGGREGATION
+// ============================================================
+function monthTx(ym) { return DB.transactions.filter(t => t.date.startsWith(ym)); }
+
+function entityTxsIncome(ym, entityId) {
+  // Include the entity itself AND all descendants (not just leaves)
+  const ids = [entityId, ...getAllDescendants(entityId).map(e => e.id)];
+  return monthTx(ym).filter(t => t.type === 'income' && ids.includes(t.entityId));
+}
+
+function entityTxsExpense(ym, entityId) {
+  const leafIds = isLeafEntity(entityId) ? [entityId] : getLeafEntities(entityId).map(e => e.id);
+  return monthTx(ym).filter(t => t.type === 'expense' && leafIds.includes(t.entityId));
+}
+
+function entityIncome(ym, entityId) {
+  return entityTxsIncome(ym, entityId).reduce((s, t) => s + t.amount, 0);
+}
+
+function entityExpense(ym, entityId) {
+  // For group: all expenses (including those without entityId)
+  if (entityId === 'group') return monthTx(ym).filter(t => t.type === 'expense').reduce((s,t) => s + t.amount, 0);
+  return entityTxsExpense(ym, entityId).reduce((s, t) => s + t.amount, 0);
+}
+
+function entityGrants(ym, entityId) {
+  const taxFreeCatIds = DB.incomeCategories.filter(c => c.taxFree).map(c => c.id);
+  return entityTxsIncome(ym, entityId).filter(t => taxFreeCatIds.includes(t.category)).reduce((s, t) => s + t.amount, 0);
+}
+
+function entityBudgetIncome(ym, entityId) {
+  if (isLeafEntity(entityId)) {
+    const b = ((DB.budgets[ym] || {})[entityId] || {});
+    return Object.values(b).reduce((s, v) => s + v, 0);
+  }
+  return getChildren(entityId).reduce((s, c) => s + entityBudgetIncome(ym, c.id), 0);
+}
+
+function totalBudgetExpense(ym) {
+  const bym = DB.expBudgets[ym] || {};
+  return Object.values(bym).reduce((s, buObj) => {
+    return s + (typeof buObj === 'object' ? Object.values(buObj).reduce((a,v)=>a+v,0) : buObj);
+  }, 0);
+}
+function buBudgetExpense(ym, bu) {
+  const bym = DB.expBudgets[ym] || {};
+  const buObj = bym[bu] || {};
+  return Object.values(buObj).reduce((s,v)=>s+v,0);
+}
+function catBudgetExpense(ym, bu, catId) {
+  return ((DB.expBudgets[ym]||{})[bu]||{})[catId] || 0;
+}
+function setExpBudget(ym, bu, catId, val) {
+  if (!DB.expBudgets[ym]) DB.expBudgets[ym] = {};
+  if (!DB.expBudgets[ym][bu]) DB.expBudgets[ym][bu] = {};
+  const v = parseFloat(val)||0;
+  if (v) DB.expBudgets[ym][bu][catId] = v;
+  else delete DB.expBudgets[ym][bu][catId];
+  save();
+  // live update BU total
+  const el = document.getElementById('ebt-'+bu);
+  if (el) el.textContent = fmt(buBudgetExpense(ym, bu));
+  const el2 = document.getElementById('ebt-total');
+  if (el2) el2.textContent = fmt(totalBudgetExpense(ym));
+}
+
+function setBudgetIncome(ym, entityId, catId, val) {
+  if (!DB.budgets[ym]) DB.budgets[ym] = {};
+  if (!DB.budgets[ym][entityId]) DB.budgets[ym][entityId] = {};
+  const v = parseFloat(val) || 0;
+  if (v) DB.budgets[ym][entityId][catId] = v;
+  else delete DB.budgets[ym][entityId][catId];
+  save();
+  // live-update parent totals
+  refreshBudgetParentTotals(ym, entityId);
+}
+
+function refreshBudgetParentTotals(ym, entityId) {
+  const e = getEntity(entityId);
+  if (!e) return;
+  // Update entity total display
+  const el = document.getElementById('bgt-' + entityId);
+  if (el) el.textContent = fmt(entityBudgetIncome(ym, entityId));
+  // Walk up
+  if (e.parentId) refreshBudgetParentTotals(ym, e.parentId);
+}
+
+// ============================================================
+// CATEGORIES
+// ============================================================
+function INCOME_CATS() { return DB.incomeCategories; }
+function EXPENSE_CATS() { return DB.expenseCategories; }
+function ALL_CATS() { return [...DB.incomeCategories, ...DB.expenseCategories]; }
+function catById(id) { return ALL_CATS().find(c => c.id === id) || {label:id, icon:'bi-tag', color:'#999', bu:'shared', taxFree:false}; }
+
+// ============================================================
+// HELPERS
+// ============================================================
+function fmt(n, d=0) {
+  if (n === undefined || n === null || isNaN(n)) return '—';
+  return '€\u202F' + n.toLocaleString('it-IT', {minimumFractionDigits:d, maximumFractionDigits:d});
+}
+function pct(a, b) { return b ? Math.round(a / b * 100) : 0; }
+function today() { return new Date().toISOString().slice(0, 10); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function buBadge(bu) {
+  if (bu === 're') return '<span class="badge b-re">RE</span>';
+  if (bu === 'cons') return '<span class="badge b-cons">CONS</span>';
+  return '<span class="badge b-neu">GRP</span>';
+}
+
+// ============================================================
+// MONTH NAV
+// ============================================================
+let currentMonth = new Date().toISOString().slice(0, 7);
+
+function prevMonth() {
+  const [y,m] = currentMonth.split('-').map(Number);
+  const d = new Date(y, m-2, 1);
+  currentMonth = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  updateUI();
+}
+function nextMonth() {
+  const [y,m] = currentMonth.split('-').map(Number);
+  const d = new Date(y, m, 1);
+  currentMonth = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  updateUI();
+}
+function mLabel(ym) {
+  const [y,m] = ym.split('-').map(Number);
+  return new Date(y, m-1, 1).toLocaleDateString('it-IT', {month:'long', year:'numeric'});
+}
+function updateMonthNav() {
+  document.getElementById('monthLabel').textContent = mLabel(currentMonth);
+  document.getElementById('sbDate').textContent = currentMonth;
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+const PAGE_TITLES = {
+  dashboard:'Dashboard', plgroup:'P&L SequoiaGroup', cashflow:'Cash Flow', loans:'Finanziamenti Soci',
+  budget:'Budget', transactions:'Registrazioni', variances:'Scostamenti',
+  tax:'IRES / IRAP', struttura:'Struttura Aziendale', settings:'Impostazioni'
+};
+let currentPage = 'dashboard';
+
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-i').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + page + "'")) n.classList.add('active');
+  });
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[page] || page;
+  currentPage = page;
+  closeSb();
+  renderPage(page);
+}
+
+function renderPage(p) {
+  switch(p) {
+    case 'dashboard':    renderDashboard(); break;
+    case 'plgroup':      renderPLGroup(); break;
+    case 'cashflow':     renderCashflow(); break;
+    case 'budget':       renderBudgetPanel(); break;
+    case 'transactions': renderTransactions(); break;
+    case 'variances':    renderVariances(); break;
+    case 'loans':        renderLoans(); break;
+    case 'tax':          renderTax(); break;
+    case 'struttura':    renderStruttura(); break;
+    case 'settings':     renderSettings(); break;
+  }
+}
+
+function updateUI() { updateMonthNav(); renderPage(currentPage); }
+
+
+const ALL_KPIS = [
+  {id:'groupInc',  label:'Ricavi Totali'},
+  {id:'reInc',     label:'Real Estate'},
+  {id:'grants',    label:'Contributi (Tax-free)'},
+  {id:'consInc',   label:'Consulting'},
+  {id:'groupExp',  label:'Costi Totali'},
+  {id:'ebitda',    label:'EBITDA Group'},
+  {id:'reEbitda',  label:'EBITDA Real Estate'},
+  {id:'consEbitda',label:'EBITDA Consulting'},
+  {id:'budgetInc', label:'Budget Ricavi'},
+  {id:'bankBal',   label:'Saldo Banca'},
+];
+// ============================================================
+// DASHBOARD
+// ============================================================
+function openDashConfig() {
+  const cfg = DB.dashConfig || {};
+  const active = cfg.kpis || ALL_KPIS.map(k=>k.id);
+  document.getElementById('dashKpiToggles').innerHTML = ALL_KPIS.map(k =>
+    '<label style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:4px 8px;background:var(--bg);border-radius:6px">'+
+    '<input type="checkbox" data-kid="'+k.id+'" '+(active.includes(k.id)?'checked':'')+' style="width:14px;height:14px;accent-color:var(--accent)">'+
+    '<span style="font-size:12px">'+k.label+'</span></label>'
+  ).join('');
+  document.getElementById('dshRE').checked = cfg.showRECard!==false;
+  document.getElementById('dshCons').checked = cfg.showConsCard!==false;
+  document.getElementById('dshExp').checked = cfg.showExpCard!==false;
+  document.getElementById('dshLoans').checked = cfg.showLoans!==false;
+  document.getElementById('dshCF').checked = cfg.showCashflow!==false;
+  document.getElementById('dashConfigModal').classList.add('open');
+}
+function closeDashConfig() { document.getElementById('dashConfigModal').classList.remove('open'); }
+function saveDashConfig() {
+  const checked = [...document.querySelectorAll('#dashKpiToggles input:checked')].map(el=>el.dataset.kid);
+  if (!checked.length) { alert('Seleziona almeno un KPI.'); return; }
+  if (!DB.dashConfig) DB.dashConfig = {};
+  DB.dashConfig.kpis = checked;
+  DB.dashConfig.showRECard = document.getElementById('dshRE').checked;
+  DB.dashConfig.showConsCard = document.getElementById('dshCons').checked;
+  DB.dashConfig.showExpCard = document.getElementById('dshExp').checked;
+  DB.dashConfig.showLoans = document.getElementById('dshLoans').checked;
+  DB.dashConfig.showCashflow = document.getElementById('dshCF').checked;
+  save(); closeDashConfig(); renderDashboard();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const ym = currentMonth;
+  const groupInc = entityIncome(ym, 'group');
+  const groupExp = entityExpense(ym, 'group');
+  const groupGrants = entityGrants(ym, 'group');
+  const ebitda = groupInc - groupExp;
+  const reInc = entityIncome(ym, 're');
+  const consInc = entityIncome(ym, 'cons');
+  const bGroupInc = entityBudgetIncome(ym, 'group');
+
+  const reExp = entityExpense(ym, 're');
+  const consExp = entityExpense(ym, 'cons');
+  const kpiMap = {
+    groupInc:   {lbl:'Ricavi Totali',     val:fmt(groupInc),   sub:bGroupInc?'Budget: '+fmt(bGroupInc):'No budget', badge:bGroupInc?{t:pct(groupInc,bGroupInc)+'%',cls:groupInc>=bGroupInc?'b-ok':'b-warn'}:null},
+    reInc:      {lbl:'Real Estate',       val:fmt(reInc),      sub:groupInc?Math.round(reInc/groupInc*100)+'% del totale':'', badge:{t:'RE',cls:'b-re'}},
+    grants:     {lbl:'Contributi Tax-free',val:fmt(groupGrants),sub:'Esenti da IRES/IRAP', badge:{t:'Tax-free',cls:'b-grant'}},
+    consInc:    {lbl:'Consulting',         val:fmt(consInc),    sub:groupInc?Math.round(consInc/groupInc*100)+'% del totale':'', badge:{t:'CONS',cls:'b-cons'}},
+    groupExp:   {lbl:'Costi Totali',       val:fmt(groupExp),   sub:'Tutte le BU', badge:null},
+    ebitda:     {lbl:'EBITDA Group',       val:fmt(ebitda),     sub:'Margin: '+(groupInc?Math.round(ebitda/groupInc*100):0)+'%', badge:{t:ebitda>=0?'Positivo':'Negativo',cls:ebitda>=0?'b-ok':'b-err'}, color:ebitda<0?'var(--err)':'var(--ok)'},
+    reEbitda:   {lbl:'EBITDA Real Estate', val:fmt(reInc-reExp),sub:'RE ricavi - costi', badge:{t:'RE',cls:'b-re'}, color:(reInc-reExp)<0?'var(--err)':'var(--ok)'},
+    consEbitda: {lbl:'EBITDA Consulting',  val:fmt(consInc-consExp),sub:'CONS ricavi - costi', badge:{t:'CONS',cls:'b-cons'}, color:(consInc-consExp)<0?'var(--err)':'var(--ok)'},
+    budgetInc:  {lbl:'Budget Ricavi',      val:fmt(bGroupInc),  sub:mLabel(ym), badge:{t:pct(groupInc,bGroupInc)+'%',cls:groupInc>=bGroupInc?'b-ok':'b-warn'}},
+    bankBal:    {lbl:'Saldo Banca',        val:fmt(DB.settings.bankBalance,2), sub:'Al '+DB.settings.bankBalanceDate, badge:{t:'Opening',cls:'b-info'}},
+  };
+  const cfg = DB.dashConfig || {};
+  const activeKpis = cfg.kpis || ['groupInc','reInc','grants','consInc','groupExp','ebitda'];
+  document.getElementById('dash-kpis').innerHTML = activeKpis.map(kid => {
+    const k = kpiMap[kid]; if (!k) return '';
+    return '<div class="kpi"><div class="kpi-lbl">'+k.lbl+'</div><div class="kpi-val" style="'+(k.color?'color:'+k.color:'')+'">'+k.val+'</div><div class="kpi-sub">'+k.sub+(k.badge?'<span class="badge '+k.badge.cls+'">'+k.badge.t+'</span>':'')+'</div></div>';
+  }).join('');
+
+  // RE card
+  function entityMiniRows(entityId, depth=0) {
+    const entity = getEntity(entityId);
+    if (!entity) return '';
+    const children = getChildren(entityId);
+    const inc = entityIncome(ym, entityId);
+    const bInc = entityBudgetIncome(ym, entityId);
+    const grants = entityGrants(ym, entityId);
+    const varAmt = inc - bInc;
+    const indent = depth * 14;
+    const isRoot = depth === 0;
+    const rowStyle = isRoot ? 'font-weight:700;background:var(--accent-p)' : '';
+    let row = `<tr style="${rowStyle}">
+      <td style="padding-left:${10+indent}px">${isRoot?'<strong>'+entity.name+'</strong>':entity.name}
+        ${grants>0?'<span class="tag-grant" style="margin-left:5px">Contributi</span>':''}</td>
+      <td class="r am-0">${bInc?fmt(bInc):'—'}</td>
+      <td class="r ${inc>0?'am-p':'am-0'}">${fmt(inc)}</td>
+      <td class="r ${bInc?(varAmt>=0?'am-p':'am-n'):'am-0'}">${bInc?(varAmt>=0?'+':'')+fmt(varAmt):'—'}</td>
+    </tr>`;
+    children.forEach(c => { row += entityMiniRows(c.id, depth+1); });
+    return row;
+  }
+
+  const dashCfg = DB.dashConfig || {};
+  const buRow = document.getElementById('dash-bu-row');
+  document.getElementById('dash-re-card').style.display = dashCfg.showRECard===false?'none':'';
+  document.getElementById('dash-cons-card').style.display = dashCfg.showConsCard===false?'none':'';
+  document.getElementById('dash-expense-card').style.display = dashCfg.showExpCard===false?'none':'';
+  if (dashCfg.showRECard===false && dashCfg.showConsCard===false) buRow.style.display='none';
+  else buRow.style.display='';
+  // bottom row: loans + cashflow
+  const bottomRow = document.getElementById('dash-bottom-row');
+  const loansCard = document.getElementById('dash-loans-card');
+  const cfCard = document.getElementById('dash-cf-card');
+  const showLoans = dashCfg.showLoans !== false;
+  const showCF = dashCfg.showCashflow !== false;
+  loansCard.style.display = showLoans ? '' : 'none';
+  cfCard.style.display = showCF ? '' : 'none';
+  bottomRow.style.display = (!showLoans && !showCF) ? 'none' : '';
+  if (showLoans) renderDashLoans();
+  if (showCF) renderDashCashflow();
+
+  document.getElementById('dash-re-card').innerHTML = `
+    <div class="card-t">Sequoia Real Estate</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Entità</th><th class="r">Budget</th><th class="r">Actual</th><th class="r">Var</th></tr></thead>
+      <tbody>${entityMiniRows('re')}</tbody>
+    </table></div>`;
+
+  document.getElementById('dash-cons-card').innerHTML = `
+    <div class="card-t">Sequoia Consulting</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Entità</th><th class="r">Budget</th><th class="r">Actual</th><th class="r">Var</th></tr></thead>
+      <tbody>${entityMiniRows('cons')}</tbody>
+    </table></div>`;
+
+  // Expense summary
+  const expCats = EXPENSE_CATS();
+  const txs = monthTx(ym);
+  const expRows = expCats.map(c => {
+    const act = txs.filter(t => t.type==='expense' && t.category===c.id).reduce((s,t) => s+t.amount, 0);
+    const bud = catBudgetExpense(ym, c.bu||'shared', c.id);
+    if (!act && !bud) return '';
+    const v = bud - act;
+    return `<tr>
+      <td><span class="chip"><i class="bi ${c.icon}" style="color:${c.color}"></i> ${c.label}</span></td>
+      <td>${buBadge(c.bu)}</td>
+      <td class="r am-0">${bud?fmt(bud):'—'}</td>
+      <td class="r am-n">${act?fmt(act):'—'}</td>
+      <td class="r ${bud?(v>=0?'am-p':'am-n'):'am-0'}">${bud?(v>=0?'+':'')+fmt(v):'—'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('dash-expense-card').innerHTML = `
+    <div class="card-t">Costi per Categoria</div>
+    ${expRows ? '<div class="tbl-wrap"><table><thead><tr><th>Categoria</th><th>BU</th><th class="r">Budget</th><th class="r">Actual</th><th class="r">Var</th></tr></thead><tbody>' + expRows + '</tbody></table></div>'
+    : '<div class="empty" style="padding:20px"><i class="bi bi-dash-circle"></i><p>Nessun costo registrato</p></div>'}`;
+}
+
+// ============================================================
+// P&L COMPLETO GROUP
+// ============================================================
+function openFinSettings() {
+  const fs = DB.finSettings || {};
+  document.getElementById('finAmm').value = fs.ammortamentiAnnui || 0;
+  document.getElementById('finOneri').value = fs.oneriFinanziari || 0;
+  document.getElementById('finSettingsModal').classList.add('open');
+}
+function closeFinSettings() { document.getElementById('finSettingsModal').classList.remove('open'); }
+function saveFinSettings() {
+  if (!DB.finSettings) DB.finSettings = {};
+  DB.finSettings.ammortamentiAnnui = parseFloat(document.getElementById('finAmm').value)||0;
+  DB.finSettings.oneriFinanziari = parseFloat(document.getElementById('finOneri').value)||0;
+  save(); closeFinSettings(); if (currentPage==='plgroup') renderPLGroup();
+}
+
+function renderPLGroup() {
+  const periodSel = document.getElementById('plgroup-period');
+  const period = periodSel ? periodSel.value : 'month';
+  const ym = currentMonth;
+  const [y,m] = ym.split('-').map(Number);
+  const fs = DB.finSettings || {};
+
+  // Determine which transactions to include
+  let txs = [];
+  let periodLabel = '';
+  let monthCount = 1;
+  if (period === 'month') {
+    txs = monthTx(ym);
+    periodLabel = mLabel(ym);
+    monthCount = 1;
+  } else if (period === 'ytd') {
+    txs = DB.transactions.filter(t => t.date.startsWith(y) && t.date <= ym+'-31');
+    periodLabel = 'YTD ' + y + ' (Gen–' + mLabel(ym).split(' ')[0] + ')';
+    monthCount = m;
+  } else {
+    txs = DB.transactions.filter(t => t.date.startsWith(y));
+    periodLabel = 'Anno ' + y;
+    monthCount = 12;
+  }
+
+  // ── Revenue aggregation ──
+  function buRevenue(buId) {
+    const ids = [buId, ...getAllDescendants(buId).map(e=>e.id)];
+    return txs.filter(t=>t.type==='income'&&ids.includes(t.entityId)).reduce((s,t)=>s+t.amount,0);
+  }
+  function buGrants(buId) {
+    const ids = [buId, ...getAllDescendants(buId).map(e=>e.id)];
+    const taxFreeCatIds = DB.incomeCategories.filter(c=>c.taxFree).map(c=>c.id);
+    return txs.filter(t=>t.type==='income'&&ids.includes(t.entityId)&&taxFreeCatIds.includes(t.category)).reduce((s,t)=>s+t.amount,0);
+  }
+  function entityRev(entityId) {
+    const ids = [entityId, ...getAllDescendants(entityId).map(e=>e.id)];
+    return txs.filter(t=>t.type==='income'&&ids.includes(t.entityId)).reduce((s,t)=>s+t.amount,0);
+  }
+
+  const reRev = buRevenue('re');
+  const consRev = buRevenue('cons');
+  const otherRev = txs.filter(t=>t.type==='income'&&!['re','cons'].some(bu=>{
+    const ids = [bu,...getAllDescendants(bu).map(e=>e.id)]; return ids.includes(t.entityId);
+  })).reduce((s,t)=>s+t.amount,0);
+  const totalRev = reRev + consRev + otherRev;
+  const totalGrants = txs.filter(t=>{
+    const taxFreeCatIds = DB.incomeCategories.filter(c=>c.taxFree).map(c=>c.id);
+    return t.type==='income'&&taxFreeCatIds.includes(t.category);
+  }).reduce((s,t)=>s+t.amount,0);
+  const taxableRev = totalRev - totalGrants;
+
+  // RE breakdown by property
+  const properties = getChildren('re').filter(e=>e.type==='property'||e.type==='bu');
+  // Consulting breakdown by client
+  const clients = getLeafEntities('cons');
+
+  // ── Cost aggregation ──
+  const finCatIds = ['bank_charges'];
+  function catExp(catId) { return txs.filter(t=>t.type==='expense'&&t.category===catId).reduce((s,t)=>s+t.amount,0); }
+
+  const opCosts = EXPENSE_CATS().filter(c=>!finCatIds.includes(c.id));
+  const finCosts = EXPENSE_CATS().filter(c=>finCatIds.includes(c.id));
+  const totalOpCosts = opCosts.reduce((s,c)=>s+catExp(c.id),0);
+  const totalFinCostsRegistered = finCosts.reduce((s,c)=>s+catExp(c.id),0);
+
+  // ── P&L Lines ──
+  const ammortMensile = (fs.ammortamentiAnnui||0) / 12 * monthCount;
+  const oneriFin = (fs.oneriFinanziari||0) * monthCount + totalFinCostsRegistered;
+  const ebitda = taxableRev - totalOpCosts;
+  const ebit  = ebitda - ammortMensile;
+  const ebt   = ebit - oneriFin;
+
+  // Tax estimate (proportional to period)
+  const iresRate = (DB.taxSettings||{}).iresRate||24;
+  const irapRate = (DB.taxSettings||{}).irapRate||3.9;
+  const imponibileIRES = Math.max(0, ebt);
+  const ires = imponibileIRES * (iresRate/100);
+  const irap = Math.max(0, taxableRev) * (irapRate/100);
+  const totalTax = ires + irap;
+  const netProfit = ebt - totalTax;
+
+  // ── Helpers ──
+  function plRow(label, value, opts={}) {
+    const {indent=0, bold=false, color='', bg='', separator=false, sub=false} = opts;
+    const valFmt = value===null ? '—' : fmt(Math.abs(value),0);
+    const sign = value!==null && value<0 ? '−' : '';
+    const valColor = color || (value>=0?'':'var(--err)');
+    if (separator) return '<tr><td colspan="2" style="padding:4px 0"><div style="height:1px;background:var(--bdr);margin:2px 0"></div></td></tr>';
+    return '<tr style="background:'+(bg||'transparent')+'">' +
+      '<td style="padding:'+(sub?'4px':'7px')+' 16px;padding-left:'+(16+indent*16)+'px;'+(bold?'font-weight:700':'')+';">' +
+        '<span style="'+(sub?'font-size:12px;color:var(--text-3)':'')+'">' + label + '</span>' +
+      '</td>' +
+      '<td class="r" style="padding:'+(sub?'4px':'7px')+' 16px;font-family:monospace;font-size:'+(bold?'14px':'13px')+';font-weight:'+(bold?'700':'400')+';color:'+valColor+'">' +
+        (value===null ? '—' : sign + valFmt) +
+      '</td>' +
+    '</tr>';
+  }
+
+  function sectionHeader(label) {
+    return '<tr style="background:var(--bg)"><td colspan="2" style="padding:8px 16px;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);font-weight:700">' + label + '</td></tr>';
+  }
+
+  function totRow(label, value, colorOverride) {
+    const c = colorOverride || (value>=0?'var(--ok)':'var(--err)');
+    return '<tr style="background:var(--text)">' +
+      '<td style="padding:10px 16px;color:#fff;font-weight:900;font-size:14px">' + label + '</td>' +
+      '<td class="r" style="padding:10px 16px;font-family:monospace;font-size:16px;font-weight:900;color:' + (value>=0?'#4ade80':'#f87171') + '">' +
+        (value<0?'−':'') + fmt(Math.abs(value),0) +
+      '</td>' +
+    '</tr>';
+  }
+
+  function subtotRow(label, value, bg) {
+    const c = value>=0?'var(--ok)':'var(--err)';
+    return '<tr style="background:'+(bg||'var(--accent-p)')+';font-weight:700">' +
+      '<td style="padding:8px 16px;font-weight:700">' + label + '</td>' +
+      '<td class="r" style="font-family:monospace;font-size:14px;font-weight:700;color:'+c+'">'+
+        (value<0?'−':'') + fmt(Math.abs(value),0) +
+      '</td>' +
+    '</tr>';
+  }
+
+  // ── Build RE detail rows ──
+  let reDetailRows = '';
+  properties.forEach(prop => {
+    const pRev = entityRev(prop.id);
+    const pGrants = buGrants(prop.id);
+    if (!pRev && !pGrants) return;
+    reDetailRows += plRow(prop.name, pRev, {indent:1, sub:true});
+    const units = getLeafEntities(prop.id);
+    if (units.length > 1) {
+      units.forEach(u => {
+        const uRev = entityRev(u.id);
+        if (uRev) reDetailRows += plRow(u.name, uRev, {indent:2, sub:true});
+      });
+    }
+    if (pGrants) reDetailRows += plRow('di cui contributi tax-free', pGrants, {indent:1, sub:true, color:'var(--grant)'});
+  });
+
+  // ── Build Consulting detail rows ──
+  let consDetailRows = '';
+  clients.forEach(cli => {
+    const cRev = entityRev(cli.id);
+    if (cRev) consDetailRows += plRow(cli.name, cRev, {indent:1, sub:true});
+  });
+
+  // ── Build cost rows ──
+  let costRows = '';
+  const buGroups = [
+    {bu:'re', label:'Real Estate', cats: opCosts.filter(c=>c.bu==='re')},
+    {bu:'cons', label:'Consulting', cats: opCosts.filter(c=>c.bu==='cons')},
+    {bu:'shared', label:'Shared / Group', cats: opCosts.filter(c=>c.bu==='shared')},
+  ];
+  buGroups.forEach(({label, cats}) => {
+    const buTotal = cats.reduce((s,c)=>s+catExp(c.id),0);
+    if (!buTotal) return;
+    costRows += plRow(label, -buTotal, {indent:0, bold:true, sub:false, color:'var(--err)'});
+    cats.forEach(c => {
+      const v = catExp(c.id);
+      if (v) costRows += plRow(c.label, -v, {indent:1, sub:true, color:'var(--err)'});
+    });
+  });
+
+  // ── Margin % helper ──
+  function marginPct(val, base) {
+    if (!base) return '';
+    return ' <span style="font-size:11px;color:var(--text-3);margin-left:6px">(' + Math.round(val/base*100) + '%)</span>';
+  }
+
+  // ── KPI summary row ──
+  const kpiHtml = [
+    {lbl:'Ricavi Totali', val:fmt(totalRev), sub:periodLabel},
+    {lbl:'EBITDA', val:fmt(ebitda), sub:'Margin '+Math.round(ebitda/(taxableRev||1)*100)+'%', col:ebitda>=0?'var(--ok)':'var(--err)'},
+    {lbl:'EBIT', val:fmt(ebit), sub:'dopo ammortamenti', col:ebit>=0?'var(--ok)':'var(--err)'},
+    {lbl:'EBT', val:fmt(ebt), sub:'ante imposte', col:ebt>=0?'var(--ok)':'var(--err)'},
+    {lbl:'Utile Netto', val:fmt(netProfit), sub:'dopo IRES+IRAP', col:netProfit>=0?'var(--ok)':'var(--err)'},
+  ].map(k => '<div class="kpi" style="border-top-color:'+(k.col||'var(--accent)')+'"><div class="kpi-lbl">'+k.lbl+'</div><div class="kpi-val" style="color:'+(k.col||'')+'">' + k.val + '</div><div class="kpi-sub">'+k.sub+'</div></div>').join('');
+
+  const tableRows =
+    sectionHeader('RICAVI') +
+    plRow('Sequoia Real Estate', reRev, {bold:true, color:'var(--re)'}) +
+    reDetailRows +
+    plRow('Sequoia Consulting', consRev, {bold:true, color:'var(--cons)'}) +
+    consDetailRows +
+    (otherRev ? plRow('Altri Ricavi Group', otherRev, {bold:true}) : '') +
+    plRow(null,null,{separator:true}) +
+    plRow('Totale Ricavi Lordi', totalRev, {bold:true}) +
+    '<tr style="background:var(--grant-b)"><td colspan="2" style="padding:4px 16px;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--grant);font-weight:700"><i class="bi bi-award-fill" style="margin-right:5px"></i>CONTRIBUTO A FONDO PERDUTO</td></tr>' +
+    (totalGrants > 0 ? (
+      plRow('Contributo Regionale a Fondo Perduto', totalGrants, {bold:true, color:'var(--grant)'}) +
+      plRow('(detassato — escluso da IRES/IRAP)', null, {indent:1, sub:true}) +
+      plRow('(−) Storno da Ricavi Imponibili', -totalGrants, {indent:1, color:'var(--grant)', sub:true})
+    ) : (
+      '<tr style="background:var(--grant-b)"><td colspan="2" style="padding:4px 32px;font-size:11px;color:var(--grant);opacity:.7"><i class="bi bi-dash"></i> Nessun contributo registrato nel periodo — registrare in "Registrazioni" selezionando Cjase 1893</td></tr>'
+    )) +
+    subtotRow('= Ricavi Imponibili', taxableRev, 'var(--green-p)') +
+
+    sectionHeader('COSTI OPERATIVI') +
+    costRows +
+    plRow(null,null,{separator:true}) +
+    subtotRow('= EBITDA' + marginPct(ebitda, taxableRev), ebitda, ebitda>=0?'var(--ok-b)':'var(--err-b)') +
+
+    sectionHeader('DA EBITDA A EBIT') +
+    plRow('(−) Ammortamenti' + (ammortMensile===0?' — non configurati':''), ammortMensile>0?-ammortMensile:null, {sub:true, color:'var(--warn)'}) +
+    (ammortMensile===0?'<tr><td colspan="2" style="padding:3px 32px"><span style="font-size:11px;color:var(--text-3)">→ Configura in "Ammort. & Finanza"</span></td></tr>':'') +
+    subtotRow('= EBIT' + marginPct(ebit, taxableRev), ebit, ebit>=0?'var(--ok-b)':'var(--err-b)') +
+
+    sectionHeader('ONERI FINANZIARI') +
+    (totalFinCostsRegistered ? plRow('Oneri Bancari (registrati)', -totalFinCostsRegistered, {indent:1, sub:true, color:'var(--err)'}) : '') +
+    (fs.oneriFinanziari ? plRow('Interessi Passivi (stimati)', -(fs.oneriFinanziari*monthCount), {indent:1, sub:true, color:'var(--err)'}) : '') +
+    (!totalFinCostsRegistered && !fs.oneriFinanziari ? '<tr><td colspan="2" style="padding:3px 32px"><span style="font-size:11px;color:var(--text-3)">→ Registra oneri finanziari o configura interessi passivi</span></td></tr>' : '') +
+    subtotRow('= EBT — Utile Ante Imposte' + marginPct(ebt, taxableRev), ebt, ebt>=0?'var(--ok-b)':'var(--err-b)') +
+
+    sectionHeader('IMPOSTE') +
+    plRow('Base Imponibile IRES', Math.max(0,ebt), {indent:1, sub:true}) +
+    plRow('IRES ' + iresRate + '%', -ires, {indent:1, sub:true, color:'var(--err)'}) +
+    plRow('Base Imponibile IRAP', Math.max(0,taxableRev), {indent:1, sub:true}) +
+    plRow('IRAP ' + irapRate + '%', -irap, {indent:1, sub:true, color:'var(--err)'}) +
+    plRow(null,null,{separator:true}) +
+    plRow('Totale Imposte', -totalTax, {bold:true, color:'var(--err)'}) +
+
+    totRow('UTILE NETTO' + marginPct(netProfit, taxableRev), netProfit);
+
+  // ── Ratios panel ──
+  const ratios = [
+    {lbl:'Gross Margin', val: totalRev ? Math.round((totalRev-totalOpCosts)/totalRev*100)+'%' : '—', ok: true},
+    {lbl:'EBITDA Margin', val: taxableRev ? Math.round(ebitda/taxableRev*100)+'%' : '—', ok: ebitda>=0},
+    {lbl:'EBIT Margin',  val: taxableRev ? Math.round(ebit/taxableRev*100)+'%' : '—', ok: ebit>=0},
+    {lbl:'Net Margin',   val: taxableRev ? Math.round(netProfit/taxableRev*100)+'%' : '—', ok: netProfit>=0},
+    {lbl:'Tax Rate eff.', val: ebt>0 ? Math.round(totalTax/ebt*100)+'%' : '—', ok: true},
+    {lbl:'Contributi/Ricavi', val: totalRev ? Math.round(totalGrants/totalRev*100)+'%' : '—', ok: true},
+  ];
+
+  document.getElementById('plgroup-content').innerHTML =
+    '<div class="kpi-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:18px">' + kpiHtml + '</div>' +
+    '<div style="display:grid;grid-template-columns:3fr 1fr;gap:14px;align-items:start">' +
+      '<div class="card" style="padding:0;overflow:hidden">' +
+        '<table style="width:100%"><tbody>' + tableRows + '</tbody></table>' +
+      '</div>' +
+      '<div>' +
+        '<div class="card" style="margin-bottom:14px">' +
+          '<div class="card-t">Indicatori</div>' +
+          ratios.map(r =>
+            '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bdr)">' +
+            '<span style="font-size:12px;color:var(--text-2)">' + r.lbl + '</span>' +
+            '<span style="font-family:monospace;font-size:13px;font-weight:700;color:' + (r.ok?'var(--ok)':'var(--err)') + '">' + r.val + '</span>' +
+            '</div>'
+          ).join('') +
+        '</div>' +
+        '<div class="card">' +
+          '<div class="card-t">Impostazioni P&amp;L</div>' +
+          '<div style="font-size:12px;color:var(--text-2);margin-bottom:10px">Ammortamenti annui</div>' +
+          '<div style="font-family:monospace;font-size:15px;font-weight:700">' + fmt(fs.ammortamentiAnnui||0) + '</div>' +
+          '<div style="font-size:12px;color:var(--text-2);margin-top:10px;margin-bottom:6px">Oneri fin. mensili</div>' +
+          '<div style="font-family:monospace;font-size:15px;font-weight:700">' + fmt(fs.oneriFinanziari||0) + '</div>' +
+          '<button class="btn btn-s sm" onclick="openFinSettings()" style="margin-top:12px;width:100%"><i class="bi bi-pencil"></i> Modifica</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+// ============================================================
+// BUDGET
+// ============================================================
+let budgetTabActive = 'income';
+
+function budgetTab(type, el) {
+  budgetTabActive = type;
+  document.querySelectorAll('#page-budget .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderBudgetPanel();
+}
+
+function renderBudgetPanel() {
+  if (budgetTabActive === 'income') renderIncomeBudget();
+  else renderExpenseBudget();
+}
+
+function renderIncomeBudget() {
+  const ym = currentMonth;
+  const incCats = INCOME_CATS();
+
+  function buildBudgetSection(entityId, depth) {
+    const entity = getEntity(entityId);
+    if (!entity) return '';
+    const children = getChildren(entityId);
+    const isLeaf = children.length === 0;
+    const indent = depth * 18;
+    const bInc = entityBudgetIncome(ym, entityId);
+    const actInc = entityIncome(ym, entityId);
+    const grants = entityGrants(ym, entityId);
+    const bud = (DB.budgets[ym]||{})[entityId]||{};
+
+    // Categories: taxFree only for property-level, never for leaf units/clients
+    const bu = entityBU(entityId);
+    const isProperty = entity.type === 'property';
+    const relevantCats = incCats.filter(c => {
+      if (c.bu !== bu && c.bu !== 'shared') return false;
+      if (c.taxFree && !isProperty) return false; // grants only on property nodes
+      if (c.taxFree && isLeaf) return false;       // not on units even if same BU
+      return true;
+    });
+
+    // taxFree cats budgeted at property level (non-leaf) — shown directly here
+    const taxFreeCats = isProperty ? incCats.filter(c => c.bu === bu && c.taxFree) : [];
+
+    const headerStyle = depth===0?'font-weight:900;background:var(--text);color:#fff':depth===1?'font-weight:700;background:var(--accent-p)':depth===2?'font-weight:700;background:var(--green-p)':'background:var(--white)';
+
+    let html = `<tr style="${headerStyle}">
+      <td colspan="${isLeaf?1:4}" style="padding-left:${10+indent}px">
+        <strong>${entity.name}</strong>
+        ${grants>0?'<span class="badge b-grant" style="margin-left:8px">Contributi: '+fmt(grants)+'</span>':''}
+      </td>
+      ${!isLeaf?'':''}
+      <td colspan="2" class="r" style="font-family:monospace;font-weight:700">
+        <span id="bgt-${entityId}">${fmt(bInc)}</span>
+        <span style="color:var(--text-3);font-size:11px;margin-left:6px">vs ${fmt(actInc)} actual</span>
+      </td>
+    </tr>`;
+
+    // Property-level: show taxFree category inputs directly
+    taxFreeCats.forEach(c => {
+      const val = bud[c.id]||'';
+      const actCat = monthTx(ym).filter(t=>t.type==='income'&&t.entityId===entityId&&t.category===c.id).reduce((s,t)=>s+t.amount,0);
+      const p = val&&actCat?pct(actCat,parseFloat(val)):0;
+      const pClass = p>100?'prog-err':p>80?'prog-warn':'prog-ok';
+      html += `<tr style="background:var(--grant-b)">
+        <td style="padding-left:${28+indent}px">
+          <span class="chip" style="border-color:var(--grant)"><i class="bi ${c.icon}" style="color:${c.color}"></i> ${c.label}</span>
+          <span class="tag-grant" style="margin-left:4px">Tax-free · livello immobile</span>
+        </td>
+        <td style="width:150px">
+          <input type="number" class="fi mono" style="padding:5px 8px;border-color:var(--grant)" value="${val}" placeholder="0" step="50"
+            data-ym="${ym}" data-entity="${entityId}" data-cat="${c.id}"
+            oninput="setBudgetIncome(this.dataset.ym,this.dataset.entity,this.dataset.cat,this.value)"
+            onchange="setBudgetIncome(this.dataset.ym,this.dataset.entity,this.dataset.cat,this.value)">
+        </td>
+        <td class="r" style="color:var(--grant);font-family:monospace">${actCat?fmt(actCat):'—'}</td>
+        <td style="width:100px">${val&&actCat?`<div style="font-size:10px;color:var(--grant);margin-bottom:2px">${p}%</div><div class="prog-wrap"><div class="prog-bar prog-ok" style="width:${Math.min(p,100)}%"></div></div>`:'—'}</td>
+      </tr>`;
+    });
+
+    if (isLeaf) {
+      relevantCats.forEach(c => {
+        const val = bud[c.id]||'';
+        const actCat = monthTx(ym).filter(t=>t.type==='income'&&t.entityId===entityId&&t.category===c.id).reduce((s,t)=>s+t.amount,0);
+        const p = val&&actCat?pct(actCat,parseFloat(val)):0;
+        const pClass = p>100?'prog-err':p>80?'prog-warn':'prog-ok';
+        html += `<tr>
+          <td style="padding-left:${28+indent}px">
+            <span class="chip"><i class="bi ${c.icon}" style="color:${c.color}"></i> ${c.label}</span>
+          </td>
+          <td style="width:150px">
+            <input type="number" class="fi mono" style="padding:5px 8px" value="${val}" placeholder="0" step="50"
+              data-ym="${ym}" data-entity="${entityId}" data-cat="${c.id}"
+              oninput="setBudgetIncome(this.dataset.ym,this.dataset.entity,this.dataset.cat,this.value)"
+              onchange="setBudgetIncome(this.dataset.ym,this.dataset.entity,this.dataset.cat,this.value)">
+          </td>
+          <td class="r am-0">${actCat?fmt(actCat):'—'}</td>
+          <td style="width:100px">${val&&actCat?`<div style="font-size:10px;color:var(--text-3);margin-bottom:2px">${p}%</div><div class="prog-wrap"><div class="prog-bar ${pClass}" style="width:${Math.min(p,100)}%"></div></div>`:'—'}</td>
+        </tr>`;
+      });
+    } else {
+      children.forEach(c => { html += buildBudgetSection(c.id, depth + 1); });
+    }
+    return html;
+  }
+
+  document.getElementById('budget-panel').innerHTML = `
+    <div class="alert alert-info"><i class="bi bi-info-circle-fill"></i>Inserisci i budget a livello di <strong>Appartamento</strong> e <strong>Cliente</strong>. I totali vengono aggregati automaticamente per Immobile → RE → Group.</div>
+    <div class="card"><div class="tbl-wrap">
+      <table><thead><tr><th>Entità / Categoria</th><th style="width:150px">Budget €/mese</th><th class="r">Actual</th><th style="width:100px">Utilizzo</th></tr></thead>
+      <tbody>${buildBudgetSection('group', 0)}</tbody></table>
+    </div></div>`;
+}
+
+function renderExpenseBudget() {
+  const ym = currentMonth;
+  const txs = monthTx(ym);
+  const buGroups = [
+    {bu:'re',     label:'Real Estate',   cls:'b-re'},
+    {bu:'cons',   label:'Consulting',    cls:'b-cons'},
+    {bu:'shared', label:'Shared / Group',cls:'b-neu'},
+  ];
+
+  let html = '';
+  let grandBud = 0, grandAct = 0;
+
+  buGroups.forEach(({bu, label, cls}) => {
+    const cats = EXPENSE_CATS().filter(c => c.bu === bu);
+    if (!cats.length) return;
+    const buAct = txs.filter(t => t.type==='expense' && cats.some(c=>c.id===t.category)).reduce((s,t)=>s+t.amount,0);
+    const buBud = buBudgetExpense(ym, bu);
+    grandBud += buBud; grandAct += buAct;
+
+    const rows = cats.map(c => {
+      const val = catBudgetExpense(ym, bu, c.id);
+      const act = txs.filter(t=>t.type==='expense'&&t.category===c.id).reduce((s,t)=>s+t.amount,0);
+      const p = val&&act ? pct(act,val) : 0;
+      const pClass = p>100?'prog-err':p>80?'prog-warn':'prog-ok';
+      return '<tr>' +
+        '<td style="padding-left:24px"><span class="chip"><i class="bi '+c.icon+'" style="color:'+c.color+'"></i> '+c.label+'</span></td>' +
+        '<td style="width:150px"><input type="number" class="fi mono" style="padding:5px 8px" value="'+(val||'')+'" placeholder="0" step="50" ' +
+          'data-ym="'+ym+'" data-bu="'+bu+'" data-cat="'+c.id+'" ' +
+          'oninput="setExpBudget(this.dataset.ym,this.dataset.bu,this.dataset.cat,this.value)" ' +
+          'onchange="setExpBudget(this.dataset.ym,this.dataset.bu,this.dataset.cat,this.value)"></td>' +
+        '<td class="r am-n">'+(act?fmt(act):'—')+'</td>' +
+        '<td style="width:90px">'+(val&&act?'<div style="font-size:10px;color:var(--text-3);margin-bottom:2px">'+p+'%</div><div class="prog-wrap"><div class="prog-bar '+pClass+'" style="width:'+Math.min(p,100)+'%"></div></div>':'—')+'</td>' +
+      '</tr>';
+    }).join('');
+
+    const bVar = buBud - buAct;
+    html += '<tr style="font-weight:700;background:var(--accent-p)">' +
+      '<td><span class="badge '+cls+'" style="margin-right:6px">'+label+'</span><strong>Totale BU</strong> <span id="ebt-'+bu+'" style="font-family:monospace;color:var(--text-3);font-size:12px;margin-left:4px">(budget: '+fmt(buBud)+')</span></td>' +
+      '<td></td>' +
+      '<td class="r am-n"><strong>'+fmt(buAct)+'</strong></td>' +
+      '<td class="r"><span class="badge '+(bVar>=0?'b-ok':'b-err')+'">'+(buBud?(bVar>=0?'+':'')+fmt(bVar):'—')+'</span></td>' +
+    '</tr>' + rows;
+  });
+
+  const totalAct = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('budget-panel').innerHTML =
+    '<div class="alert alert-info"><i class="bi bi-info-circle-fill"></i>I costi sono budgetati per BU e categoria. Il confronto Budget vs Actual avviene per BU.</div>' +
+    '<div class="card"><div class="tbl-wrap"><table>' +
+    '<thead><tr><th>BU / Categoria Costo</th><th style="width:150px">Budget €/mese</th><th class="r">Actual</th><th style="width:90px">Utilizzo</th></tr></thead>' +
+    '<tbody>'+html+'</tbody>' +
+    '<tfoot><tr style="background:var(--text);color:#fff;font-weight:900">' +
+      '<td><strong>TOTALE COSTI GROUP</strong> <span id="ebt-total" style="font-family:monospace;font-size:12px;opacity:.7">(budget: '+fmt(grandBud)+')</span></td>' +
+      '<td></td>' +
+      '<td class="r" style="color:#f87171;font-family:monospace"><strong>'+fmt(totalAct)+'</strong></td>' +
+      '<td class="r"><span style="font-family:monospace;color:'+(grandBud&&(grandBud-totalAct)>=0?'#4ade80':'#f87171')+'">'+(grandBud?(grandBud-totalAct>=0?'+':'')+fmt(grandBud-totalAct):'—')+'</span></td>' +
+    '</tr></tfoot></table></div></div>';
+}
+
+
+
+function saveBudget() {
+  save();
+  const btn = document.querySelector('#page-budget .btn-p');
+  btn.innerHTML = '<i class="bi bi-check2-all"></i> Salvato!';
+  setTimeout(()=>btn.innerHTML='<i class="bi bi-check2"></i> Salva', 1500);
+}
+
+function copyBudget() {
+  const [y,m] = currentMonth.split('-').map(Number);
+  const prev = new Date(y,m-2,1);
+  const prevYm = prev.getFullYear()+'-'+String(prev.getMonth()+1).padStart(2,'0');
+  if (budgetTabActive === 'income') {
+    if (!DB.budgets[prevYm]) { alert('Nessun budget ricavi trovato per il mese precedente.'); return; }
+    DB.budgets[currentMonth] = JSON.parse(JSON.stringify(DB.budgets[prevYm]));
+  } else {
+    if (!DB.expBudgets[prevYm]) { alert('Nessun budget costi trovato per il mese precedente.'); return; }
+    DB.expBudgets[currentMonth] = JSON.parse(JSON.stringify(DB.expBudgets[prevYm]));
+  }
+  save(); renderBudgetPanel();
+}
+
+// ============================================================
+// TRANSACTIONS
+// ============================================================
+let txFilter = 'all';
+
+function filterTx(f, el) {
+  txFilter = f;
+  document.querySelectorAll('#tx-filter-tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderTransactions();
+}
+
+function renderTransactions() {
+  const ym = currentMonth;
+  let txs = monthTx(ym);
+  if (txFilter==='income') txs = txs.filter(t=>t.type==='income');
+  else if (txFilter==='expense') txs = txs.filter(t=>t.type==='expense');
+  else if (txFilter==='re') txs = txs.filter(t=>entityBU(t.entityId)==='re');
+  else if (txFilter==='cons') txs = txs.filter(t=>entityBU(t.entityId)==='cons');
+  txs = txs.slice().sort((a,b)=>b.date.localeCompare(a.date));
+
+  if (!txs.length) {
+    document.getElementById('tx-table').innerHTML = '<div class="empty"><i class="bi bi-pencil-square"></i><p>Nessuna registrazione. Clicca "Nuova" per iniziare.</p></div>';
+    return;
+  }
+
+  document.getElementById('tx-table').innerHTML = `<table>
+    <thead><tr><th>Data</th><th>Descrizione</th><th>Entità</th><th>Categoria</th><th>Cliente/Forn.</th><th class="r">Importo</th><th></th></tr></thead>
+    <tbody>${txs.map(t => {
+      const c = catById(t.category);
+      const entity = getEntity(t.entityId);
+      const isGrant = c.taxFree;
+      const cls = t.type==='income'?'am-p':'am-n';
+      const pref = t.type==='income'?'+':'−';
+      return `<tr>
+        <td style="font-family:monospace;font-size:11px">${t.date}</td>
+        <td>${t.description||'—'}</td>
+        <td>
+          ${entity?`<div style="font-size:12px;font-weight:700">${entity.name}</div><div style="font-size:10px;color:var(--text-3)">${entityPath(t.entityId)}</div>`:'<span style="color:var(--text-3)">—</span>'}
+        </td>
+        <td>
+          <span class="chip"><i class="bi ${c.icon}" style="color:${c.color}"></i> ${c.label}</span>
+          ${isGrant?'<span class="tag-grant" style="margin-left:4px">Tax-free</span>':''}
+        </td>
+        <td style="color:var(--text-3);font-size:12px">${t.source||'—'}</td>
+        <td class="r"><span class="${cls}">${pref}${fmt(t.amount,2)}</span></td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-s sm" onclick="editTx('${t.id}')" style="margin-right:4px"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-d sm" onclick="deleteTx('${t.id}')"><i class="bi bi-trash"></i></button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+function openTxModal() {
+  document.getElementById('txModal').classList.add('open');
+  document.getElementById('txEditId').value = '';
+  document.getElementById('txDate').value = today();
+  document.getElementById('txAmount').value = '';
+  document.getElementById('txDesc').value = '';
+  document.getElementById('txSource').value = '';
+  document.getElementById('txTitle').textContent = 'Nuova Registrazione';
+  setTxType('income', document.getElementById('txTypeInc'));
+}
+
+function closeTxModal() { document.getElementById('txModal').classList.remove('open'); }
+
+function setTxType(type, el) {
+  document.querySelectorAll('#txModal .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('txModal').dataset.type = type;
+  populateTxEntitySelect(type);
+}
+
+function populateTxEntitySelect(type, selectedEntityId) {
+  const sel = document.getElementById('txEntity');
+  sel.innerHTML = '';
+
+  const buDefs = [
+    {bu:'re', label:'Real Estate'},
+    {bu:'cons', label:'Consulting'},
+    {bu:'shared', label:'Shared / Group'}
+  ];
+
+  buDefs.forEach(({bu, label}) => {
+    const group = document.createElement('optgroup');
+    group.label = '── ' + label + ' ──';
+
+    if (type === 'expense') {
+      if (bu === 'shared') {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Costo Condiviso (Group)';
+        if (!selectedEntityId) opt.selected = true;
+        group.appendChild(opt);
+      }
+      DB.entities.filter(e => isLeafEntity(e.id) && e.bu === bu).forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = entityPath(e.id);
+        if (e.id === selectedEntityId) opt.selected = true;
+        group.appendChild(opt);
+      });
+    } else {
+      // Income: property-level nodes (for grants) + leaf nodes
+      // BU-level nodes excluded — transactions go on property or unit/client
+      const propertyNodes = DB.entities.filter(e =>
+        !isLeafEntity(e.id) && e.bu === bu && e.type === 'property'
+      );
+      propertyNodes.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        // Mark with ★ if has taxFree categories available
+        const hasGrants = DB.incomeCategories.some(c => c.bu === bu && c.taxFree);
+        opt.textContent = (hasGrants ? '★ ' : '') + e.name + ' — contributi/ricavi immobile';
+        if (e.id === selectedEntityId) opt.selected = true;
+        group.appendChild(opt);
+      });
+      // Leaf entities (apartments, clients)
+      DB.entities.filter(e => isLeafEntity(e.id) && e.bu === bu).forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = entityPath(e.id);
+        if (e.id === selectedEntityId) opt.selected = true;
+        group.appendChild(opt);
+      });
+    }
+
+    if (group.children.length) sel.appendChild(group);
+  });
+
+  onTxEntityChange();
+}
+
+function onTxEntityChange() {
+  const entityId = document.getElementById('txEntity').value;
+  const type = document.getElementById('txModal').dataset.type || 'income';
+  const bu = entityId ? entityBU(entityId) : 'shared';
+  const entity = getEntity(entityId);
+  const isProperty = entity && entity.type === 'property';
+  const cats = type === 'income' ? INCOME_CATS() : EXPENSE_CATS();
+
+  let relevant;
+  if (type === 'income') {
+    relevant = cats.filter(c => {
+      if (c.bu !== bu && c.bu !== 'shared') return false;
+      if (c.taxFree && !isProperty) return false; // grants only on property nodes
+      return true;
+    });
+  } else {
+    relevant = cats.filter(c => c.bu === bu || c.bu === 'shared' || !entityId);
+  }
+
+  const catSel = document.getElementById('txCategory');
+  catSel.innerHTML = relevant.map(c =>
+    '<option value="' + c.id + '">' + c.label + (c.taxFree ? ' ★ Tax-free' : '') + '</option>'
+  ).join('');
+
+  // Show/hide grant hint
+  const hint = document.getElementById('txGrantHint');
+  if (hint) {
+    if (type === 'income' && isProperty) {
+      hint.style.display = '';
+    } else if (type === 'income' && entity && !isProperty && !isLeafEntity(entityId)) {
+      // BU selected — remind to use property level
+      hint.innerHTML = '<i class="bi bi-info-circle-fill"></i> Per i Contributi a Fondo Perduto seleziona <strong>Cjase 1893</strong> (★) come entità.';
+      hint.className = 'alert alert-info';
+      hint.style.display = '';
+    } else {
+      hint.style.display = 'none';
+    }
+  }
+}
+
+function saveTx() {
+  const type = document.getElementById('txModal').dataset.type || 'income';
+  const date = document.getElementById('txDate').value;
+  const amount = parseFloat(document.getElementById('txAmount').value);
+  const entityId = document.getElementById('txEntity').value;
+  const category = document.getElementById('txCategory').value;
+  const description = document.getElementById('txDesc').value;
+  const source = document.getElementById('txSource').value;
+  const method = document.getElementById('txMethod').value;
+  const editId = document.getElementById('txEditId').value;
+
+  if (!date || isNaN(amount) || amount <= 0) { alert('Inserisci data e importo validi.'); return; }
+
+  const tx = {id: editId||uid(), type, date, amount, entityId: entityId||null, category, description, source, method};
+  if (editId) {
+    const i = DB.transactions.findIndex(t => t.id === editId);
+    if (i >= 0) DB.transactions[i] = tx;
+  } else {
+    DB.transactions.push(tx);
+  }
+  save(); closeTxModal(); renderPage(currentPage);
+}
+
+function deleteTx(id) {
+  if (!confirm('Eliminare questa registrazione?')) return;
+  DB.transactions = DB.transactions.filter(t => t.id !== id);
+  save(); renderTransactions();
+}
+
+function editTx(id) {
+  const t = DB.transactions.find(x => x.id === id);
+  if (!t) return;
+  openTxModal();
+  document.getElementById('txEditId').value = t.id;
+  document.getElementById('txDate').value = t.date;
+  document.getElementById('txAmount').value = t.amount;
+  document.getElementById('txDesc').value = t.description||'';
+  document.getElementById('txSource').value = t.source||'';
+  document.getElementById('txMethod').value = t.method||'Bonifico';
+  document.getElementById('txTitle').textContent = 'Modifica Registrazione';
+  const el = t.type==='income' ? document.getElementById('txTypeInc') : document.getElementById('txTypeExp');
+  setTxType(t.type, el);
+  // Restore entity + category after dropdown is populated
+  setTimeout(() => {
+    populateTxEntitySelect(t.type, t.entityId);
+    // Wait a tick for onTxEntityChange to populate categories, then set category
+    setTimeout(() => {
+      document.getElementById('txCategory').value = t.category;
+    }, 10);
+  }, 20);
+}
+
+// ============================================================
+// VARIANCES
+// ============================================================
+function renderVariances() {
+  const ym = currentMonth;
+
+  function varRow(entityId, depth) {
+    const entity = getEntity(entityId);
+    if (!entity) return '';
+    const children = getChildren(entityId);
+    const isLeaf = children.length === 0;
+    const inc = entityIncome(ym, entityId);
+    const bInc = entityBudgetIncome(ym, entityId);
+    const varAmt = inc - bInc;
+    const varPct = bInc ? (varAmt/bInc*100).toFixed(1) : null;
+    const indent = depth * 18;
+    const rowStyle = depth===0?'font-weight:900;background:var(--accent-p)':depth===1?'font-weight:700;background:var(--green-p)':depth===2?'font-weight:700':'';
+    const p = bInc ? pct(inc, bInc) : 0;
+    const pClass = p>=100?'prog-ok':p>=80?'prog-warn':'prog-err';
+
+    let html = `<tr style="${rowStyle}">
+      <td style="padding-left:${10+indent}px">${entity.name}</td>
+      <td class="r am-0">${bInc?fmt(bInc):'—'}</td>
+      <td class="r am-p">${inc?fmt(inc):'—'}</td>
+      <td class="r ${bInc?(varAmt>=0?'am-p':'am-n'):'am-0'}">${bInc?(varAmt>=0?'+':'')+fmt(varAmt):'—'}</td>
+      <td class="r">${varPct!==null?`<span class="badge ${varAmt>=0?'b-ok':'b-err'}">${(varAmt>=0?'+':'')+varPct}%</span>`:'—'}</td>
+      <td style="width:100px">${bInc?`<div class="prog-wrap" style="margin-top:0"><div class="prog-bar ${pClass}" style="width:${Math.min(p,100)}%"></div></div>`:'—'}</td>
+    </tr>`;
+
+    if (!isLeaf) children.forEach(c => { html += varRow(c.id, depth+1); });
+    return html;
+  }
+
+  const txs = monthTx(ym);
+  const expRows = EXPENSE_CATS().map(c => {
+    const act = txs.filter(t=>t.type==='expense'&&t.category===c.id).reduce((s,t)=>s+t.amount,0);
+    const bud = catBudgetExpense(ym, c.bu||'shared', c.id);
+    if (!act&&!bud) return '';
+    const v = bud - act;
+    const p = bud ? pct(act,bud) : 0;
+    const pClass = p>100?'prog-err':p>80?'prog-warn':'prog-ok';
+    return `<tr>
+      <td style="padding-left:28px"><span class="chip"><i class="bi ${c.icon}" style="color:${c.color}"></i> ${c.label}</span></td>
+      <td class="r am-0">${bud?fmt(bud):'—'}</td>
+      <td class="r am-n">${act?fmt(act):'—'}</td>
+      <td class="r ${bud?(v>=0?'am-p':'am-n'):'am-0'}">${bud?(v>=0?'+':'')+fmt(v):'—'}</td>
+      <td class="r">${bud?`<span class="badge ${v>=0?'b-ok':'b-err'}">${v>=0?'+':''}${(v/bud*100).toFixed(1)}%</span>`:'—'}</td>
+      <td style="width:100px">${bud?`<div class="prog-wrap" style="margin-top:0"><div class="prog-bar ${pClass}" style="width:${Math.min(p,100)}%"></div></div>`:'—'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('variance-content').innerHTML = `
+    <h3 class="sec-t">Scostamenti Ricavi (per Entità)</h3>
+    <div class="card" style="margin-bottom:16px"><div class="tbl-wrap"><table>
+      <thead><tr><th>Entità</th><th class="r">Budget</th><th class="r">Actual</th><th class="r">Scostamento</th><th class="r">%</th><th style="width:100px">Progresso</th></tr></thead>
+      <tbody>${varRow('group',0)}</tbody>
+    </table></div></div>
+    <h3 class="sec-t">Scostamenti Costi (per Categoria)</h3>
+    <div class="card"><div class="tbl-wrap"><table>
+      <thead><tr><th>Categoria</th><th class="r">Budget</th><th class="r">Actual</th><th class="r">Scostamento</th><th class="r">%</th><th style="width:100px">Progresso</th></tr></thead>
+      <tbody>${expRows||'<tr><td colspan="6" style="text-align:center;padding:18px;color:var(--text-3)">Nessun dato costi</td></tr>'}</tbody>
+    </table></div></div>`;
+}
+
+// ============================================================
+// CASH FLOW
+// ============================================================
+function renderCashflow() {
+  const ym = currentMonth;
+  const [y,m] = ym.split('-').map(Number);
+  const months = [];
+  for (let i=-2;i<=6;i++) {
+    const d = new Date(y,m-1+i,1);
+    months.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));
+  }
+
+  let running = DB.settings.bankBalance;
+  const rows = months.map(mon => {
+    const txs = monthTx(mon);
+    const hasData = txs.length > 0;
+    const actInc = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const actExp = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    const bInc = entityBudgetIncome(mon, 'group');
+    const bExp = totalBudgetExpense(mon);
+    const inc = hasData ? actInc : bInc;
+    const exp = hasData ? actExp : bExp;
+    const net = inc - exp;
+    const open = running;
+    running += net;
+    const close = running;
+    const isCur = mon === ym;
+    const isFut = mon > ym;
+    return `<tr style="${isCur?'background:var(--accent-p);font-weight:700':''}">
+      <td style="font-family:monospace;font-size:11px;white-space:nowrap">
+        ${mLabel(mon)}
+        ${isFut?'<span class="badge b-info" style="font-size:9px;margin-left:4px">Forecast</span>':hasData?'<span class="badge b-ok" style="font-size:9px;margin-left:4px">Actual</span>':'<span class="badge b-neu" style="font-size:9px;margin-left:4px">Budget</span>'}
+      </td>
+      <td class="r am-p">${fmt(inc)}</td>
+      <td class="r am-n">${fmt(exp)}</td>
+      <td class="r ${net>=0?'am-p':'am-n'}">${net>=0?'+':''}${fmt(Math.abs(net))}</td>
+      <td class="r am-0">${fmt(open,0)}</td>
+      <td class="r am-0" style="${close<0?'color:var(--err);font-weight:700':''}">${fmt(close,0)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('cf-content').innerHTML = `
+    <div class="alert alert-info"><i class="bi bi-info-circle-fill"></i>Mesi con registrazioni → valori actual. Mesi futuri → proiezione da budget.</div>
+    <div class="card"><div class="tbl-wrap"><table>
+      <thead><tr><th>Mese</th><th class="r">Ricavi</th><th class="r">Costi</th><th class="r">Net</th><th class="r">Saldo Apertura</th><th class="r">Saldo Chiusura</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div></div>`;
+}
+
+// ============================================================
+// LOANS — FINANZIAMENTI INFRUTTIFERI SOCIO UNICO
+// ============================================================
+
+// ── Helpers ──
+function loanOutstanding(loan) {
+  const repaid = loan.repayments.filter(r=>r.paid).reduce((s,r)=>s+r.amount,0);
+  return loan.amount - repaid;
+}
+function loanTotalScheduled(loan) {
+  return loan.repayments.reduce((s,r)=>s+r.amount,0);
+}
+function totalLoansOutstanding() {
+  return DB.loans.reduce((s,l)=>s+loanOutstanding(l),0);
+}
+function nextRepayment() {
+  const tod = today();
+  const upcoming = DB.loans.flatMap(l =>
+    l.repayments.filter(r=>!r.paid && r.date >= tod).map(r=>({...r, loanId:l.id, loanNotes:l.notes}))
+  ).sort((a,b)=>a.date.localeCompare(b.date));
+  return upcoming[0]||null;
+}
+
+// ── Page render ──
+function renderLoans() {
+  const loans = DB.loans;
+  const totalOut = totalLoansOutstanding();
+  const totalIn = loans.reduce((s,l)=>s+l.amount,0);
+  const totalRepaid = loans.reduce((s,l)=>s+l.repayments.filter(r=>r.paid).reduce((s2,r)=>s2+r.amount,0),0);
+  const next = nextRepayment();
+
+  if (!loans.length) {
+    document.getElementById('loans-content').innerHTML =
+      '<div class="alert alert-info"><i class="bi bi-info-circle-fill"></i>Nessun finanziamento registrato. Clicca "Nuovo Finanziamento" per aggiungerne uno.</div>';
+    return;
+  }
+
+  let html = '<div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px">' +
+    '<div class="kpi"><div class="kpi-lbl">Totale Erogato</div><div class="kpi-val">' + fmt(totalIn,2) + '</div><div class="kpi-sub">' + loans.length + ' finanziamenti</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Già Restituito</div><div class="kpi-val" style="color:var(--ok)">' + fmt(totalRepaid,2) + '</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Debito Residuo</div><div class="kpi-val" style="color:var(--err)">' + fmt(totalOut,2) + '</div></div>' +
+    '<div class="kpi"><div class="kpi-lbl">Prossima Rata</div>' +
+      (next ? '<div class="kpi-val" style="font-size:14px">' + fmt(next.amount,2) + '</div><div class="kpi-sub">' + next.date + '</div>' : '<div class="kpi-val" style="color:var(--text-3)">—</div>') +
+    '</div></div>';
+
+  loans.forEach(loan => {
+    const outstanding = loanOutstanding(loan);
+    const totalSched = loanTotalScheduled(loan);
+    const repaidAmt = loan.repayments.filter(r=>r.paid).reduce((s,r)=>s+r.amount,0);
+    const pctRepaid = loan.amount ? pct(repaidAmt, loan.amount) : 0;
+    const pClass = pctRepaid>=100?'prog-ok':pctRepaid>=50?'prog-info':'prog-warn';
+
+    const repRows = loan.repayments.map((r,i) => {
+      const isPast = r.date < today();
+      const statusCls = r.paid ? 'b-ok' : isPast ? 'b-err' : 'b-info';
+      const status = r.paid ? 'Pagata' : isPast ? 'Scaduta' : 'Programmata';
+      return '<tr style="' + (r.paid?'opacity:.65':'') + '">' +
+        '<td style="font-family:monospace;font-size:11px">' + r.date + '</td>' +
+        '<td class="r am-0">' + fmt(r.amount,2) + '</td>' +
+        '<td><span class="badge ' + statusCls + '">' + status + '</span></td>' +
+        '<td style="text-align:right">' +
+          '<button class="btn btn-s sm" style="font-size:11px" data-lid="' + loan.id + '" data-rid="' + r.id + '" onclick="toggleRepayment(this.dataset.lid,this.dataset.rid)">' +
+            (r.paid ? '<i class="bi bi-arrow-counterclockwise"></i> Annulla' : '<i class="bi bi-check2"></i> Pagata') +
+          '</button>' +
+          '<button class="btn-ico row-del" data-lid="' + loan.id + '" data-rid="' + r.id + '" onclick="deleteRepayment(this.dataset.lid,this.dataset.rid)"><i class="bi bi-trash"></i></button>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+
+    html += '<div class="card" style="margin-bottom:14px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">' +
+        '<div>' +
+          '<div style="font-size:13px;font-weight:700">Finanziamento — ' + loan.date + '</div>' +
+          (loan.notes ? '<div style="font-size:12px;color:var(--text-3);margin-top:2px">' + loan.notes + '</div>' : '') +
+        '</div>' +
+        '<div style="text-align:right;margin-left:16px;flex-shrink:0">' +
+          '<div style="font-size:10px;color:var(--text-3)">Erogato</div>' +
+          '<div style="font-family:monospace;font-size:16px;font-weight:700">' + fmt(loan.amount,2) + '</div>' +
+          (outstanding>0 ? '<div style="font-size:11px;color:var(--err)">Residuo: ' + fmt(outstanding,2) + '</div>' : '<div class="badge b-ok" style="margin-top:3px">Estinto</div>') +
+        '</div>' +
+      '</div>' +
+      '<div class="prog-wrap" style="margin-bottom:12px"><div class="prog-bar ' + pClass + '" style="width:' + Math.min(pctRepaid,100) + '%"></div></div>' +
+      (loan.repayments.length ?
+        '<div class="tbl-wrap"><table><thead><tr><th>Data</th><th class="r">Importo</th><th>Stato</th><th></th></tr></thead><tbody>' + repRows + '</tbody>' +
+        '<tfoot><tr style="background:var(--green-p);font-weight:700"><td>Totale Programmato</td><td class="r am-0">' + fmt(totalSched,2) + '</td>' +
+        '<td colspan="2" style="color:var(--text-3);font-size:11px">' + (loan.amount-totalSched!==0 ? 'Δ non coperto: ' + fmt(Math.abs(loan.amount-totalSched),2) : 'Piano completo ✓') + '</td></tr></tfoot></table></div>' :
+        '<div class="empty" style="padding:14px"><i class="bi bi-calendar-x"></i><p>Nessuna rata pianificata</p></div>'
+      ) +
+      '<div style="display:flex;gap:6px;margin-top:10px;justify-content:flex-end">' +
+        '<button class="btn btn-s sm" data-lid="' + loan.id + '" onclick="editLoan(this.dataset.lid)"><i class="bi bi-pencil"></i> Modifica</button>' +
+        '<button class="btn btn-d sm" data-lid="' + loan.id + '" onclick="deleteLoan(this.dataset.lid)"><i class="bi bi-trash"></i></button>' +
+      '</div>' +
+    '</div>';
+  });
+
+  document.getElementById('loans-content').innerHTML = html;
+}
+
+// ── Loan CRUD ──
+let tempRepayments = [];
+
+function openLoanModal() {
+  tempRepayments = [];
+  document.getElementById('loanDate').value = today();
+  document.getElementById('loanAmount').value = '';
+  document.getElementById('loanNotes').value = '';
+  document.getElementById('loanEditId').value = '';
+  document.getElementById('loanModalTitle').textContent = 'Nuovo Finanziamento';
+  renderRepaymentRows();
+  document.getElementById('loanModal').classList.add('open');
+}
+
+function closeLoanModal() { document.getElementById('loanModal').classList.remove('open'); }
+
+function editLoan(id) {
+  const loan = DB.loans.find(l=>l.id===id);
+  if (!loan) return;
+  tempRepayments = JSON.parse(JSON.stringify(loan.repayments));
+  document.getElementById('loanDate').value = loan.date;
+  document.getElementById('loanAmount').value = loan.amount;
+  document.getElementById('loanNotes').value = loan.notes||'';
+  document.getElementById('loanEditId').value = id;
+  document.getElementById('loanModalTitle').textContent = 'Modifica Finanziamento';
+  renderRepaymentRows();
+  document.getElementById('loanModal').classList.add('open');
+}
+
+function renderRepaymentRows() {
+  document.getElementById('repaymentRows').innerHTML = tempRepayments.length ?
+    tempRepayments.map((r,i) =>
+      '<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center">' +
+        '<input type="date" class="fi" value="' + r.date + '" oninput="tempRepayments[' + i + '].date=this.value" style="padding:6px 9px">' +
+        '<input type="number" class="fi mono" placeholder="Importo €" value="' + r.amount + '" step="100" oninput="tempRepayments[' + i + '].amount=parseFloat(this.value)||0" style="padding:6px 9px">' +
+        '<button class="btn-ico" onclick="removeRepRow(' + i + ')"><i class="bi bi-trash" style="color:var(--err)"></i></button>' +
+      '</div>'
+    ).join('') :
+    '<div class="note" style="text-align:center;padding:10px">Nessuna rata — clicca "Aggiungi Rata" per pianificare la restituzione.</div>';
+}
+
+function addRepaymentRow() {
+  const lastDate = tempRepayments.length ? tempRepayments[tempRepayments.length-1].date : today();
+  const nextDate = new Date(lastDate);
+  nextDate.setMonth(nextDate.getMonth()+1);
+  const nd = nextDate.getFullYear()+'-'+String(nextDate.getMonth()+1).padStart(2,'0')+'-'+String(nextDate.getDate()).padStart(2,'0');
+  tempRepayments.push({id:uid(), date:nd, amount:0, paid:false});
+  renderRepaymentRows();
+}
+
+function removeRepRow(i) {
+  tempRepayments.splice(i,1);
+  renderRepaymentRows();
+}
+
+function saveLoan() {
+  const date = document.getElementById('loanDate').value;
+  const amount = parseFloat(document.getElementById('loanAmount').value);
+  if (!date || isNaN(amount) || amount<=0) { alert('Inserisci data e importo validi.'); return; }
+  const editId = document.getElementById('loanEditId').value;
+  const loan = {
+    id: editId||uid(),
+    date,
+    amount,
+    notes: document.getElementById('loanNotes').value.trim(),
+    repayments: tempRepayments.map(r=>({...r, amount:parseFloat(r.amount)||0})).filter(r=>r.amount>0)
+  };
+  if (editId) {
+    const i = DB.loans.findIndex(l=>l.id===editId);
+    if (i>=0) DB.loans[i] = {...DB.loans[i], ...loan, repayments: loan.repayments.map(r=>({
+      ...r, paid: DB.loans[i].repayments.find(or=>or.id===r.id)?.paid||false
+    }))};
+  } else {
+    DB.loans.push(loan);
+  }
+  save(); closeLoanModal(); renderLoans();
+}
+
+function toggleRepayment(loanId, repId) {
+  const loan = DB.loans.find(l=>l.id===loanId);
+  if (!loan) return;
+  const rep = loan.repayments.find(r=>r.id===repId);
+  if (!rep) return;
+  rep.paid = !rep.paid;
+  save(); renderLoans();
+  if (currentPage==='dashboard') renderDashLoans();
+}
+
+function deleteRepayment(loanId, repId) {
+  if (!confirm('Eliminare questa rata?')) return;
+  const loan = DB.loans.find(l=>l.id===loanId);
+  if (!loan) return;
+  loan.repayments = loan.repayments.filter(r=>r.id!==repId);
+  save(); renderLoans();
+}
+
+function deleteLoan(id) {
+  if (!confirm('Eliminare questo finanziamento e tutto il piano di restituzione?')) return;
+  DB.loans = DB.loans.filter(l=>l.id!==id);
+  save(); renderLoans();
+}
+
+// ── Dashboard widget: Loans ──
+function renderDashLoans() {
+  const loans = DB.loans;
+  const el = document.getElementById('dash-loans-card');
+  if (!loans.length) {
+    el.innerHTML = '<div class="card-t">Finanziamenti Soci</div><div class="empty" style="padding:16px"><i class="bi bi-bank2"></i><p>Nessun finanziamento</p></div>';
+    return;
+  }
+  const totalOut = totalLoansOutstanding();
+  const totalIn = loans.reduce((s,l)=>s+l.amount,0);
+  const next = nextRepayment();
+  const upcoming = DB.loans.flatMap(l =>
+    l.repayments.filter(r=>!r.paid).map(r=>({...r, loanId:l.id}))
+  ).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,4);
+
+  el.innerHTML = '<div class="card-t" style="display:flex;justify-content:space-between;align-items:center">Finanziamenti Soci <button class="btn btn-s sm" onclick="nav(&quot;loans&quot;)" style="font-size:10px">Dettaglio →</button></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">' +
+      '<div><div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em">Erogato totale</div><div style="font-family:monospace;font-size:17px;font-weight:700">' + fmt(totalIn,0) + '</div></div>' +
+      '<div><div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em">Debito residuo</div><div style="font-family:monospace;font-size:17px;font-weight:700;color:var(--err)">' + fmt(totalOut,0) + '</div></div>' +
+    '</div>' +
+    '<div class="prog-wrap" style="margin-bottom:12px"><div class="prog-bar ' + (pct(totalIn-totalOut,totalIn)>80?'prog-ok':'prog-warn') + '" style="width:' + Math.min(pct(totalIn-totalOut,totalIn),100) + '%"></div></div>' +
+    (upcoming.length ? '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin-bottom:6px">Prossime Rate</div>' +
+      upcoming.map(r => {
+        const isPast = r.date < today();
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bdr)">' +
+          '<span style="font-size:12px;color:' + (isPast?'var(--err)':'var(--text-2)') + '">' + r.date + '</span>' +
+          '<span style="font-family:monospace;font-size:12px;font-weight:700">' + fmt(r.amount,0) + '</span>' +
+          '<span class="badge ' + (isPast?'b-err':'b-info') + '">' + (isPast?'Scaduta':'Programmata') + '</span>' +
+        '</div>';
+      }).join('') :
+      '<div class="note">Nessuna rata programmata.</div>');
+}
+
+// ── Dashboard widget: Cash Flow mini ──
+function renderDashCashflow() {
+  const ym = currentMonth;
+  const [y,m] = ym.split('-').map(Number);
+  const months = [];
+  for (let i=-1;i<=5;i++) {
+    const d = new Date(y,m-1+i,1);
+    months.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));
+  }
+  let running = DB.settings.bankBalance;
+  const rows = months.map(mon => {
+    const txs = monthTx(mon);
+    const hasData = txs.length>0;
+    const actInc = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const actExp = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    const bInc = entityBudgetIncome(mon,'group');
+    const bExp = totalBudgetExpense(mon);
+    const inc = hasData?actInc:bInc;
+    const exp = hasData?actExp:bExp;
+    // subtract scheduled repayments
+    const repMonth = DB.loans.flatMap(l=>l.repayments.filter(r=>!r.paid&&r.date.startsWith(mon))).reduce((s,r)=>s+r.amount,0);
+    const net = inc - exp - repMonth;
+    const open = running;
+    running += net;
+    const close = running;
+    const isCur = mon===ym;
+    const isFut = mon>ym;
+    const tag = isFut?'Forecast':hasData?'Actual':'Budget';
+    const tagCls = isFut?'b-info':hasData?'b-ok':'b-neu';
+    return '<tr style="' + (isCur?'font-weight:700;background:var(--accent-p)':'') + '">' +
+      '<td style="font-size:11px;white-space:nowrap">' + mLabel(mon).replace(/ \d{4}/,'') + ' <span class="badge ' + tagCls + '" style="font-size:8px">' + tag + '</span></td>' +
+      '<td class="r am-p" style="font-size:11px">' + (inc?fmt(inc):'—') + '</td>' +
+      '<td class="r am-n" style="font-size:11px">' + (exp?fmt(exp):'—') + '</td>' +
+      (repMonth?'<td class="r" style="font-size:11px;color:var(--warn)">−'+fmt(repMonth)+'</td>':'<td class="r" style="font-size:11px;color:var(--text-3)">—</td>') +
+      '<td class="r am-0" style="font-size:11px;' + (close<0?'color:var(--err);font-weight:700':'') + '">' + fmt(close,0) + '</td>' +
+    '</tr>';
+  }).join('');
+
+  document.getElementById('dash-cf-card').innerHTML =
+    '<div class="card-t" style="display:flex;justify-content:space-between;align-items:center">Cash Flow <button class="btn btn-s sm" onclick="nav(&quot;cashflow&quot;)" style="font-size:10px">Completo →</button></div>' +
+    '<div class="tbl-wrap"><table>' +
+    '<thead><tr><th>Mese</th><th class="r">Ricavi</th><th class="r">Costi</th><th class="r">Rate</th><th class="r">Saldo</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody>' +
+    '</table></div>';
+}
+
+// ============================================================
+// TAX — IRES / IRAP
+// ============================================================
+function renderTax() {
+  const ts = DB.taxSettings;
+  const ym = currentMonth;
+  const [y] = ym.split('-').map(Number);
+
+  const yearTxs = DB.transactions.filter(t => t.date.startsWith(y));
+  const yearInc = yearTxs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const taxFreeCatIds = DB.incomeCategories.filter(c=>c.taxFree).map(c=>c.id);
+  const yearGrants = yearTxs.filter(t=>t.type==='income'&&taxFreeCatIds.includes(t.category)).reduce((s,t)=>s+t.amount,0);
+  const yearExp = yearTxs.filter(t=>t.type==='expense'&&t.category!=='tax_payment').reduce((s,t)=>s+t.amount,0);
+
+  const taxableInc = Math.max(0, yearInc - yearGrants);
+  const imponibileIRES = Math.max(0, taxableInc - yearExp);
+  const ires = imponibileIRES * (ts.iresRate/100);
+  const irap = taxableInc * (ts.irapRate/100);
+  const total = ires + irap;
+  const taxPaid = yearTxs.filter(t=>t.category==='tax_payment').reduce((s,t)=>s+t.amount,0);
+  const monthsElapsed = parseInt(ym.split('-')[1]);
+  const monthlyAccrual = total / 12;
+
+  // Grants breakdown
+  const grantBreakdown = taxFreeCatIds.map(cid => {
+    const cat = catById(cid);
+    const amt = yearTxs.filter(t=>t.type==='income'&&t.category===cid).reduce((s,t)=>s+t.amount,0);
+    return amt>0?`<tr><td style="padding-left:24px"><span class="chip"><i class="bi ${cat.icon}" style="color:${cat.color}"></i> ${cat.label}</span></td><td class="r"><span class="badge b-grant">${fmt(amt,2)}</span></td></tr>`:'' ;
+  }).join('');
+
+  document.getElementById('tax-content').innerHTML = `
+    <div class="fr" style="align-items:start;gap:16px">
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-t">Calcolo Imposte ${y}</div>
+          <div style="display:grid;gap:10px">
+            <div><div class="kpi-lbl">Ricavi Totali (YTD)</div><div class="kpi-val">${fmt(yearInc,2)}</div></div>
+            ${yearGrants>0?`<div><div class="kpi-lbl" style="color:var(--grant)">(-) Contributi Reg. Detassati</div><div class="kpi-val" style="color:var(--grant)">${fmt(yearGrants,2)}</div></div>`:''}
+            <div><div class="kpi-lbl">Ricavi Imponibili</div><div class="kpi-val">${fmt(taxableInc,2)}</div></div>
+            <div><div class="kpi-lbl">(-) Costi Deducibili</div><div class="kpi-val">${fmt(yearExp,2)}</div></div>
+            <div><div class="kpi-lbl">Imponibile IRES</div><div class="kpi-val" style="font-weight:700">${fmt(imponibileIRES,2)}</div></div>
+            <div class="divider"></div>
+            <div><div class="kpi-lbl">IRES (${ts.iresRate}%)</div><div class="kpi-val" style="color:var(--err)">${fmt(ires,2)}</div></div>
+            <div><div class="kpi-lbl">IRAP (${ts.irapRate}% su ricavi imponibili)</div><div class="kpi-val" style="color:var(--err)">${fmt(irap,2)}</div></div>
+            <div><div class="kpi-lbl">Totale Imposte Stimate</div><div class="kpi-val" style="color:var(--err);font-size:22px"><strong>${fmt(total,2)}</strong></div></div>
+            <div class="divider"></div>
+            <div><div class="kpi-lbl">Accantonamento Mensile</div><div class="kpi-val" style="color:var(--warn)">${fmt(monthlyAccrual,2)}</div></div>
+            <div><div class="kpi-lbl">Imposte Pagate (YTD)</div><div class="kpi-val" style="color:var(--ok)">${fmt(taxPaid,2)}</div></div>
+            <div><div class="kpi-lbl">Residuo da Versare</div><div class="kpi-val" style="color:${total-taxPaid>0?'var(--err)':'var(--ok)'}">${fmt(Math.max(0,total-taxPaid),2)}</div></div>
+          </div>
+        </div>
+        ${yearGrants>0?`<div class="card">
+          <div class="card-t">Contributi Regionali Detassati</div>
+          <div class="alert alert-grant" style="margin-bottom:10px"><i class="bi bi-award-fill"></i>Questi importi sono esclusi dalla base imponibile IRES e IRAP.</div>
+          <table><thead><tr><th>Categoria</th><th class="r">Importo YTD</th></tr></thead>
+          <tbody>${grantBreakdown}<tr style="font-weight:700"><td>Totale detassato</td><td class="r"><span class="badge b-grant">${fmt(yearGrants,2)}</span></td></tr></tbody></table>
+        </div>`:''}
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-t">Aliquote</div>
+          <div class="fg"><label class="fl">IRES (%)</label><input type="number" class="fi mono" id="iresRate" value="${ts.iresRate}" step="0.5"></div>
+          <div class="fg"><label class="fl">IRAP (%)</label><input type="number" class="fi mono" id="irapRate" value="${ts.irapRate}" step="0.1"></div>
+          <button class="btn btn-p sm" onclick="saveTaxSettings()"><i class="bi bi-check2"></i> Aggiorna</button>
+        </div>
+        <div class="card">
+          <div class="card-t">Scadenze ${y}</div>
+          <table><thead><tr><th>Data</th><th>Voce</th><th class="r">Stima</th></tr></thead>
+          <tbody>
+            <tr><td style="font-family:monospace;font-size:11px">${y}-06-30</td><td>Saldo IRES/IRAP anno prec.</td><td class="r am-n">${fmt(total*0.4,0)}</td></tr>
+            <tr><td style="font-family:monospace;font-size:11px">${y}-11-30</td><td>Acconto IRES/IRAP (100%)</td><td class="r am-n">${fmt(total,0)}</td></tr>
+          </tbody></table>
+          <p class="note" style="margin-top:8px">Importi stimati YTD. Verificare con il commercialista.</p>
+        </div>
+      </div>
+    </div>`;
+}
+
+function saveTaxSettings() {
+  DB.taxSettings.iresRate = parseFloat(document.getElementById('iresRate').value)||24;
+  DB.taxSettings.irapRate = parseFloat(document.getElementById('irapRate').value)||3.9;
+  save(); renderTax();
+}
+
+// ============================================================
+// STRUTTURA
+// ============================================================
+function renderStruttura() {
+  function entityTree(parentId, depth) {
+    const children = getChildren(parentId);
+    if (!children.length) return '';
+    return children.map(e => {
+      const isLeaf = isLeafEntity(e.id);
+      const txCount = DB.transactions.filter(t=>t.entityId===e.id).length;
+      const typeLabel = {group:'Group',bu:'Business Unit',property:'Immobile',unit:'Unità',client:'Cliente'}[e.type]||e.type;
+      return `<tr>
+        <td style="padding-left:${12+depth*18}px">
+          <i class="bi ${isLeaf?'bi-dot':'bi-folder-fill'}" style="color:${e.bu==='re'?'var(--re)':e.bu==='cons'?'var(--cons)':'var(--text-3)'};margin-right:5px"></i>
+          <strong>${e.name}</strong>
+          ${e.notes?`<span style="color:var(--text-3);font-size:11px;margin-left:6px">${e.notes}</span>`:''}
+        </td>
+        <td><span class="badge b-neu">${typeLabel}</span></td>
+        <td>${buBadge(e.bu)}</td>
+        <td style="color:var(--text-3);font-size:12px">${txCount} tx</td>
+        <td style="text-align:right">
+          <button class="btn btn-s sm" onclick="addChildEntity('${e.id}')"><i class="bi bi-plus-lg"></i></button>
+          <button class="btn-ico" onclick="editEntity('${e.id}')" style="opacity:.6"><i class="bi bi-pencil"></i></button>
+          ${txCount===0&&!isLeafEntity(e.id)===false||txCount===0?'<button class="btn-ico row-del" onclick="deleteEntity(\''+e.id+'\')"><i class="bi bi-trash"></i></button>':'<span style="width:28px;display:inline-block"></span>'}
+        </td>
+      </tr>` + entityTree(e.id, depth+1);
+    }).join('');
+  }
+
+  // Categories section
+  function catRows(cats, type) {
+    return cats.map(c => {
+      const txCount = DB.transactions.filter(t=>t.category===c.id).length;
+      return `<tr>
+        <td><span class="chip"><i class="bi ${c.icon}" style="color:${c.color}"></i> ${c.label}</span>
+          ${c.taxFree?'<span class="tag-grant" style="margin-left:4px">Tax-free</span>':''}
+        </td>
+        <td>${buBadge(c.bu)}</td>
+        <td style="color:var(--text-3);font-size:11px">${txCount} tx</td>
+        <td style="text-align:right">
+          <button class="btn-ico" data-id="${c.id}" data-type="${type}" onclick="editCat(this.dataset.id,this.dataset.type)" style="opacity:.6"><i class="bi bi-pencil"></i></button>
+          ${txCount===0?`<button class="btn-ico row-del" data-id="${c.id}" data-type="${type}" onclick="deleteCat(this.dataset.id,this.dataset.type)"><i class="bi bi-trash"></i></button>`:'<span style="width:28px;display:inline-block"></span>'}
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('struttura-content').innerHTML = `
+    <h3 class="sec-t">Albero Aziendale</h3>
+    <div class="card" style="margin-bottom:16px">
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Entità</th><th>Tipo</th><th>BU</th><th>Transazioni</th><th style="text-align:right">Azioni</th></tr></thead>
+        <tbody><tr style="font-weight:900;background:var(--accent-p)">
+          <td><i class="bi bi-diagram-3-fill" style="color:var(--accent);margin-right:6px"></i><strong>Sequoia Group S.R.L.</strong></td>
+          <td><span class="badge b-neu">Group</span></td><td></td><td></td>
+          <td style="text-align:right"><button class="btn btn-s sm" onclick="addChildEntity('group')"><i class="bi bi-plus-lg"></i> BU</button></td>
+        </tr>${entityTree('group', 0)}</tbody>
+      </table></div>
+    </div>
+    <div class="fr" style="gap:14px;align-items:start">
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <h3 class="sec-t" style="margin:0">Categorie Ricavi</h3>
+          <button class="btn btn-p sm" onclick="openCatModal('income')"><i class="bi bi-plus-lg"></i> Aggiungi</button>
+        </div>
+        <div class="card"><div class="tbl-wrap"><table>
+          <thead><tr><th>Categoria</th><th>BU</th><th>Tx</th><th></th></tr></thead>
+          <tbody>${catRows(INCOME_CATS(),'income')}</tbody>
+        </table></div></div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <h3 class="sec-t" style="margin:0">Categorie Costi</h3>
+          <button class="btn btn-p sm" onclick="openCatModal('expense')"><i class="bi bi-plus-lg"></i> Aggiungi</button>
+        </div>
+        <div class="card"><div class="tbl-wrap"><table>
+          <thead><tr><th>Categoria</th><th>BU</th><th>Tx</th><th></th></tr></thead>
+          <tbody>${catRows(EXPENSE_CATS(),'expense')}</tbody>
+        </table></div></div>
+      </div>
+    </div>`;
+}
+
+// Entity modal
+function openEntityModal() {
+  document.getElementById('entityModal').classList.add('open');
+  document.getElementById('entEditId').value = '';
+  document.getElementById('entName').value = '';
+  document.getElementById('entNotes').value = '';
+  document.getElementById('entityModalTitle').textContent = 'Aggiungi Entità';
+  populateEntityParentSelect(null);
+}
+function addChildEntity(parentId) {
+  openEntityModal();
+  populateEntityParentSelect(parentId);
+}
+function closeEntityModal() { document.getElementById('entityModal').classList.remove('open'); }
+
+function populateEntityParentSelect(selectedId) {
+  const sel = document.getElementById('entParent');
+  sel.innerHTML = DB.entities.map(e =>
+    '<option value="' + e.id + '" ' + (e.id===selectedId?'selected':'') + '>' + entityPath(e.id) + '</option>'
+  ).join('');
+}
+
+function editEntity(id) {
+  const e = getEntity(id);
+  if (!e) return;
+  document.getElementById('entityModal').classList.add('open');
+  document.getElementById('entEditId').value = e.id;
+  document.getElementById('entName').value = e.name;
+  document.getElementById('entNotes').value = e.notes||'';
+  document.getElementById('entType').value = e.type;
+  document.getElementById('entityModalTitle').textContent = 'Modifica Entità';
+  populateEntityParentSelect(e.parentId);
+}
+
+function saveEntity() {
+  const name = document.getElementById('entName').value.trim();
+  if (!name) { alert('Inserisci il nome.'); return; }
+  const editId = document.getElementById('entEditId').value;
+  const parentId = document.getElementById('entParent').value;
+  const parent = getEntity(parentId);
+  const type = document.getElementById('entType').value;
+  const bu = parent ? (parent.bu === 'group' ? (type==='unit'?'re':'cons') : parent.bu) : 'group';
+
+  const entity = {
+    id: editId || uid(),
+    name,
+    type,
+    parentId: parentId||null,
+    bu,
+    notes: document.getElementById('entNotes').value.trim()
+  };
+
+  if (editId) {
+    const i = DB.entities.findIndex(e=>e.id===editId);
+    if (i>=0) DB.entities[i] = {...DB.entities[i], ...entity};
+  } else {
+    DB.entities.push(entity);
+  }
+  save(); closeEntityModal(); renderStruttura();
+}
+
+function deleteEntity(id) {
+  const txCount = DB.transactions.filter(t=>t.entityId===id).length;
+  if (txCount>0) { alert('Impossibile eliminare: ci sono '+txCount+' transazioni collegate.'); return; }
+  const childCount = getAllDescendants(id).length;
+  if (childCount>0) { alert('Impossibile eliminare: ha '+childCount+' entità figlio. Elimina prima quelle.'); return; }
+  if (!confirm('Eliminare questa entità?')) return;
+  DB.entities = DB.entities.filter(e=>e.id!==id);
+  save(); renderStruttura();
+}
+
+// Category modal
+// ── ICON PICKER ──
+const COMMON_ICONS = [
+  // Immobili & Real Estate
+  'bi-house-fill','bi-house-door-fill','bi-house-heart-fill','bi-houses-fill',
+  'bi-building','bi-building-fill','bi-buildings-fill','bi-building-add',
+  'bi-door-open-fill','bi-door-closed-fill','bi-window','bi-window-fullscreen',
+  'bi-key-fill','bi-lock-fill','bi-unlock-fill','bi-safe-fill',
+  'bi-ladder','bi-bricks','bi-hammer','bi-wrench-adjustable-fill',
+  // Finance & Business
+  'bi-cash-stack','bi-cash-coin','bi-coin','bi-currency-euro','bi-currency-dollar',
+  'bi-wallet-fill','bi-wallet2','bi-bank','bi-bank2','bi-credit-card-fill',
+  'bi-credit-card-2-front-fill','bi-piggy-bank-fill','bi-safe2-fill',
+  'bi-receipt','bi-receipt-cutoff','bi-file-earmark-text-fill','bi-file-earmark-spreadsheet-fill',
+  'bi-graph-up-arrow','bi-graph-down-arrow','bi-graph-up','bi-bar-chart-fill',
+  'bi-pie-chart-fill','bi-activity','bi-trending-up','bi-trending-down',
+  'bi-arrow-up-circle-fill','bi-arrow-down-circle-fill',
+  // Persone & Team
+  'bi-people-fill','bi-person-fill','bi-person-badge-fill','bi-person-workspace',
+  'bi-person-check-fill','bi-person-x-fill','bi-person-heart','bi-person-raised-hand',
+  'bi-briefcase-fill','bi-briefcase','bi-clipboard-check-fill','bi-clipboard-data-fill',
+  // Documenti & Amministrazione
+  'bi-file-earmark-fill','bi-file-earmark-check-fill','bi-file-earmark-pdf-fill',
+  'bi-file-earmark-lock-fill','bi-folder-fill','bi-folder2-open','bi-journal-text',
+  'bi-journal-check','bi-journal-bookmark-fill','bi-archive-fill','bi-inbox-fill',
+  'bi-send-fill','bi-envelope-fill','bi-envelope-check-fill','bi-telephone-fill',
+  // Servizi & Operativi
+  'bi-tools','bi-wrench','bi-gear-fill','bi-screwdriver','bi-plug-fill',
+  'bi-lightning-fill','bi-lightning-charge-fill','bi-water','bi-droplet-fill',
+  'bi-fire','bi-thermometer-half','bi-wind','bi-snow','bi-sun-fill','bi-cloud-fill',
+  'bi-wifi','bi-router-fill','bi-hdd-fill','bi-cpu-fill','bi-laptop-fill',
+  'bi-phone-fill','bi-tablet-fill','bi-printer-fill','bi-camera-fill',
+  // Trasporti & Logistica
+  'bi-truck-front-fill','bi-car-front-fill','bi-bus-front-fill','bi-bicycle',
+  'bi-airplane-fill','bi-airplane-engines-fill','bi-train-front-fill','bi-ship-fill',
+  'bi-geo-alt-fill','bi-geo-fill','bi-map-fill','bi-compass-fill','bi-pin-map-fill',
+  // Ospitalità & Turismo
+  'bi-calendar-check-fill','bi-calendar-event-fill','bi-calendar-fill','bi-calendar-range-fill',
+  'bi-stars','bi-star-fill','bi-trophy-fill','bi-award-fill','bi-patch-check-fill',
+  'bi-cup-hot-fill','bi-cup-straw','bi-egg-fried','bi-basket-fill',
+  'bi-bag-fill','bi-cart-fill','bi-shop-fill','bi-shop-window',
+  // Marketing & Comunicazione
+  'bi-megaphone-fill','bi-mic-fill','bi-broadcast-pin','bi-camera-reels-fill',
+  'bi-image-fill','bi-images','bi-palette-fill','bi-brush-fill',
+  'bi-pen-fill','bi-pencil-fill','bi-pencil-square','bi-magic',
+  // Salute & Protezione
+  'bi-shield-fill-check','bi-shield-fill','bi-shield-lock-fill','bi-shield-fill-plus',
+  'bi-heart-fill','bi-heart-pulse-fill','bi-bandaid-fill','bi-plus-circle-fill',
+  'bi-eye-fill','bi-bell-fill','bi-bell-slash-fill','bi-exclamation-triangle-fill',
+  // Contributi & Istituzionale
+  'bi-bank2','bi-building-check','bi-pass-fill','bi-postage-fill',
+  'bi-flag-fill','bi-globe','bi-globe2','bi-translate',
+  'bi-check2-circle','bi-check-circle-fill','bi-check-all','bi-patch-check',
+  // Varie
+  'bi-box-fill','bi-boxes','bi-layers-fill','bi-stack','bi-collection-fill',
+  'bi-grid-fill','bi-grid-3x3-gap-fill','bi-list-check','bi-list-ul',
+  'bi-tag-fill','bi-tags-fill','bi-bookmark-fill','bi-bookmarks-fill',
+  'bi-percent','bi-hash','bi-at','bi-three-dots','bi-infinity',
+  'bi-dash-circle-fill','bi-x-circle-fill','bi-info-circle-fill','bi-question-circle-fill',
+];
+
+function updateCatIconPreview() {
+  const icon = document.getElementById('catIcon').value.trim() || 'bi-tag-fill';
+  const color = document.getElementById('catColor').value;
+  const previewI = document.getElementById('catIconPreviewI');
+  if (previewI) { previewI.className = 'bi ' + icon; previewI.style.color = color; }
+}
+
+function renderIconGrid(filter) {
+  const inner = document.getElementById('iconPickerInner');
+  if (!inner) return;
+  const icons = filter ? COMMON_ICONS.filter(ic => ic.includes(filter.toLowerCase())) : COMMON_ICONS;
+  inner.innerHTML = icons.map(ic =>
+    '<div title="'+ic+'" data-ic="'+ic+'" onclick="pickIcon(this.dataset.ic)" style="width:30px;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--white);border:1px solid var(--bdr)">' +
+    '<i class="bi '+ic+'" style="font-size:15px;color:var(--text-2)"></i></div>'
+  ).join('');
+}
+
+function filterIcons() {
+  const q = document.getElementById('iconSearch').value;
+  renderIconGrid(q);
+}
+
+let iconPickerOpen = false;
+function toggleIconPicker() {
+  const grid = document.getElementById('iconPickerGrid');
+  iconPickerOpen = !iconPickerOpen;
+  if (iconPickerOpen) {
+    grid.style.display = 'block';
+    renderIconGrid('');
+    const s = document.getElementById('iconSearch');
+    if (s) { s.value = ''; s.focus(); }
+  } else {
+    grid.style.display = 'none';
+  }
+}
+
+function pickIcon(icon) {
+  document.getElementById('catIcon').value = icon;
+  updateCatIconPreview();
+  document.getElementById('iconPickerGrid').style.display = 'none';
+  iconPickerOpen = false;
+}
+
+function openCatModal(type) {
+  document.getElementById('catModal').classList.add('open');
+  document.getElementById('catEditId').value = '';
+  document.getElementById('catLabel').value = '';
+  document.getElementById('catIcon').value = 'bi-tag-fill';
+  document.getElementById('catColor').value = '#607D8B';
+  document.getElementById('catType').value = type||'income';
+  document.getElementById('catBU').value = 'shared';
+  document.getElementById('catTaxFree').checked = false;
+  document.getElementById('catTaxFreeRow').style.display = type==='income'?'':'none';
+  document.getElementById('catModalTitle').textContent = 'Nuova Categoria';
+  iconPickerOpen = false;
+  const pg = document.getElementById('iconPickerGrid');
+  if (pg) pg.style.display = 'none';
+  setTimeout(updateCatIconPreview, 10);
+}
+function onCatTypeChange() {
+  const type = document.getElementById('catType').value;
+  document.getElementById('catTaxFreeRow').style.display = type==='income'?'':'none';
+}
+function closeCatModal() { document.getElementById('catModal').classList.remove('open'); }
+
+function editCat(id, type) {
+  const cats = type==='income' ? DB.incomeCategories : DB.expenseCategories;
+  const c = cats.find(x=>x.id===id);
+  if (!c) return;
+  document.getElementById('catModal').classList.add('open');
+  document.getElementById('catEditId').value = id;
+  document.getElementById('catLabel').value = c.label;
+  document.getElementById('catIcon').value = c.icon;
+  document.getElementById('catColor').value = c.color;
+  document.getElementById('catType').value = type;
+  document.getElementById('catBU').value = c.bu||'shared';
+  document.getElementById('catTaxFree').checked = c.taxFree||false;
+  document.getElementById('catTaxFreeRow').style.display = type==='income'?'':'none';
+  document.getElementById('catModalTitle').textContent = 'Modifica Categoria';
+  iconPickerOpen = false;
+  const pg = document.getElementById('iconPickerGrid');
+  if (pg) pg.style.display = 'none';
+  setTimeout(updateCatIconPreview, 10);
+}
+
+function saveCat() {
+  const label = document.getElementById('catLabel').value.trim();
+  if (!label) { alert('Inserisci il nome.'); return; }
+  const type = document.getElementById('catType').value;
+  const editId = document.getElementById('catEditId').value;
+  const cat = {
+    id: editId||uid(),
+    label,
+    icon: document.getElementById('catIcon').value.trim()||'bi-tag-fill',
+    color: document.getElementById('catColor').value,
+    bu: document.getElementById('catBU').value,
+    taxFree: type==='income' ? document.getElementById('catTaxFree').checked : false
+  };
+  const arr = type==='income' ? DB.incomeCategories : DB.expenseCategories;
+  if (editId) {
+    const i = arr.findIndex(c=>c.id===editId);
+    if (i>=0) arr[i] = cat;
+  } else {
+    arr.push(cat);
+  }
+  save(); closeCatModal(); renderStruttura();
+}
+
+function deleteCat(id, type) {
+  const used = DB.transactions.some(t=>t.category===id);
+  if (used) { alert('Impossibile eliminare: ci sono transazioni collegate.'); return; }
+  if (!confirm('Eliminare questa categoria?')) return;
+  if (type==='income') DB.incomeCategories = DB.incomeCategories.filter(c=>c.id!==id);
+  else DB.expenseCategories = DB.expenseCategories.filter(c=>c.id!==id);
+  Object.keys(DB.budgets).forEach(ym => {
+    Object.keys(DB.budgets[ym]).forEach(eid => { delete DB.budgets[ym][eid][id]; });
+  });
+  Object.keys(DB.expBudgets).forEach(ym => { delete DB.expBudgets[ym][id]; });
+  save(); renderStruttura();
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function renderSettings() {
+  const s = DB.settings;
+  document.getElementById('settings-content').innerHTML = `
+    <div class="fr" style="align-items:start;gap:14px">
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-t">Dati Società</div>
+          <div class="fg"><label class="fl">Nome Società</label><input type="text" class="fi" id="setName" value="${s.companyName}"></div>
+        </div>
+        <div class="card">
+          <div class="card-t">Saldo Bancario di Apertura</div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Saldo (€)</label><input type="number" class="fi mono" id="setBankBal" value="${s.bankBalance}" step="0.01"></div>
+            <div class="fg"><label class="fl">Al</label><input type="date" class="fi" id="setBankDate" value="${s.bankBalanceDate}"></div>
+          </div>
+          <p class="note">Punto di partenza per il Cash Flow Forecast.</p>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-t">Gestione Dati</div>
+          <p class="note" style="margin-bottom:12px">Dati salvati localmente nel browser. Esporta regolarmente come backup.</p>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <button class="btn btn-s" onclick="exportData()"><i class="bi bi-download"></i> Esporta JSON</button>
+            <button class="btn btn-s" onclick="importClick()"><i class="bi bi-upload"></i> Importa JSON</button>
+            <button class="btn btn-d" onclick="resetData()"><i class="bi bi-trash"></i> Reset Tutti i Dati</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-t">PWA — Installazione</div>
+          <p class="note">Su Mac: apri in Safari → File → "Aggiungi al Dock".<br>Su iPhone: Safari → Condividi → "Aggiungi a schermata Home".</p>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px;text-align:right">
+      <button class="btn btn-p" onclick="saveSettings()"><i class="bi bi-check2"></i> Salva Impostazioni</button>
+    </div>`;
+}
+
+function saveSettings() {
+  DB.settings.companyName = document.getElementById('setName').value||'Sequoia Group S.R.L.';
+  DB.settings.bankBalance = parseFloat(document.getElementById('setBankBal').value)||0;
+  DB.settings.bankBalanceDate = document.getElementById('setBankDate').value||today();
+  save();
+  const btn = document.querySelector('#page-settings .btn-p');
+  btn.innerHTML = '<i class="bi bi-check2-all"></i> Salvato!';
+  setTimeout(()=>btn.innerHTML='<i class="bi bi-check2"></i> Salva Impostazioni',1500);
+}
+
+// ============================================================
+// DATA IO
+// ============================================================
+function exportData() {
+  const blob = new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='sequoia_'+today()+'.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+function importClick() { document.getElementById('importFile').click(); }
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (d.transactions!==undefined&&d.entities!==undefined) {
+        if (confirm('Questo sovrascriverà tutti i dati. Continuare?')) {
+          DB = d; save(); updateUI(); alert('Importazione completata.');
+        }
+      } else { alert('Formato non valido.'); }
+    } catch { alert('Errore lettura file.'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+function resetData() {
+  if (!confirm('ATTENZIONE: tutti i dati verranno eliminati definitivamente. Continuare?')) return;
+  DB = defaultDB(); save(); updateUI();
+}
+
+// ============================================================
+// MOBILE
+// ============================================================
+function openSb() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sbOverlay').classList.add('open');
+}
+function closeSb() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('open');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+
+updateMonthNav();
+renderDashboard();
+</script>
+</body>
+</html>
