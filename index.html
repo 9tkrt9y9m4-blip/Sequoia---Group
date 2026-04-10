@@ -359,9 +359,18 @@ tr:hover .row-del{opacity:1}
     <div class="page" id="page-struttura">
       <div class="page-hdr">
         <h2>Struttura Aziendale</h2>
-        <button class="btn btn-p sm" onclick="openEntityModal()"><i class="bi bi-plus-lg"></i> Aggiungi Entità</button>
+        <div id="strut-actions" style="display:flex;gap:8px">
+          <button class="btn btn-p sm" id="strut-add-btn" onclick="openEntityModal()"><i class="bi bi-plus-lg"></i> Aggiungi Entità</button>
+        </div>
+      </div>
+      <div class="tabs" id="strut-tabs">
+        <button class="tab active" onclick="strutTab('entita',this)">Entità</button>
+        <button class="tab" onclick="strutTab('ricavi',this)">Categorie Ricavi</button>
+        <button class="tab" onclick="strutTab('costi',this)">Categorie Costi</button>
       </div>
       <div id="struttura-content"></div>
+      <div id="cat-ricavi-content" style="display:none"></div>
+      <div id="cat-costi-content" style="display:none"></div>
     </div>
 
     <!-- SETTINGS -->
@@ -372,6 +381,82 @@ tr:hover .row-del{opacity:1}
 
   </div>
 </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="overlay" id="sqCatModal">
+  <div class="modal">
+    <div class="modal-h">
+      <h3 id="sqCatModalTitle">Nuova Categoria</h3>
+      <button onclick="closeSqCatModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-b">
+      <div class="fg">
+        <label class="fl">Tipo</label>
+        <div class="tabs" style="margin-bottom:0">
+          <button class="tab active" id="sqCatTypeInc" onclick="setSqCatType('income',this)">Ricavo</button>
+          <button class="tab" id="sqCatTypeExp" onclick="setSqCatType('expense',this)">Costo</button>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Nome Categoria</label>
+        <input type="text" class="fi" id="sqCatLabel" placeholder="es. Affitto Breve">
+      </div>
+      <div class="fr">
+        <div class="fg">
+          <label class="fl">Icona / Emoji</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="text" class="fi" id="sqCatIcon" placeholder="🏠 o bi-house" style="flex:1" oninput="previewSqCatIcon()">
+            <div id="sqCatIconPreview" style="font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-radius:8px;border:1.5px solid var(--bdr-2);flex-shrink:0">🏠</div>
+          </div>
+          <button class="btn btn-s sm" style="margin-top:6px;width:100%" onclick="openSqIconPicker()"><i class="bi bi-grid"></i> Scegli dalla libreria</button>
+        </div>
+        <div class="fg">
+          <label class="fl">Colore</label>
+          <input type="color" class="fi" id="sqCatColor" value="#C8963C" style="height:42px;padding:4px">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Business Unit</label>
+        <select class="fs" id="sqCatBu">
+          <option value="re">Real Estate</option>
+          <option value="cons">Consulting</option>
+          <option value="shared">Shared / Group</option>
+        </select>
+      </div>
+      <div class="fg" id="sqCatTaxFreeRow" style="display:none">
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="sqCatTaxFree" style="width:16px;height:16px;accent-color:var(--gold)">
+          <label for="sqCatTaxFree" class="fl" style="margin:0;cursor:pointer">Tax-free (es. Contributo Regionale)</label>
+        </div>
+      </div>
+      <input type="hidden" id="sqCatEditId">
+      <input type="hidden" id="sqCatEditType">
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-d sm" id="sqCatDelBtn" style="display:none;margin-right:auto" onclick="deleteSqCat()"><i class="bi bi-trash"></i> Elimina</button>
+      <button class="btn btn-s" onclick="closeSqCatModal()">Annulla</button>
+      <button class="btn btn-p" onclick="saveSqCat()"><i class="bi bi-check2"></i> Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- ICON PICKER MODAL (SEQUOIA) -->
+<div class="overlay" id="sqIconPickerModal" style="z-index:600">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-h">
+      <h3>Libreria Icone & Emoji</h3>
+      <button onclick="closeSqIconPicker()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-b" style="padding:14px">
+      <input type="text" class="fi" id="sqIconSearch" placeholder="🔍 Cerca emoji o icona..." oninput="filterSqIcons()" style="margin-bottom:12px">
+      <div class="tabs" style="margin-bottom:10px" id="sqIconTabs">
+        <button class="tab active" onclick="sqIconSection('emoji',this)">Emoji</button>
+        <button class="tab" onclick="sqIconSection('bi',this)">Bootstrap Icons</button>
+      </div>
+      <div id="sqIconGrid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-height:320px;overflow-y:auto"></div>
+    </div>
+  </div>
 </div>
 
 <!-- TRANSACTION MODAL -->
@@ -2668,6 +2753,251 @@ function closeSb() {
 
 updateMonthNav();
 renderDashboard();
+
+// ===================== STRUTTURA TABS =====================
+let strutTabActive = 'entita';
+
+function strutTab(tab, el) {
+  strutTabActive = tab;
+  document.querySelectorAll('#strut-tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('struttura-content').style.display    = tab==='entita'  ? '' : 'none';
+  document.getElementById('cat-ricavi-content').style.display   = tab==='ricavi'  ? '' : 'none';
+  document.getElementById('cat-costi-content').style.display    = tab==='costi'   ? '' : 'none';
+  const addBtn = document.getElementById('strut-add-btn');
+  if (tab==='entita') {
+    addBtn.innerHTML='<i class="bi bi-plus-lg"></i> Aggiungi Entità';
+    addBtn.onclick = openEntityModal;
+    addBtn.style.display='';
+  } else if (tab==='ricavi') {
+    addBtn.innerHTML='<i class="bi bi-plus-lg"></i> Nuova Categoria Ricavo';
+    addBtn.onclick = ()=>openSqCatModal(null,'income');
+    addBtn.style.display='';
+    renderCatRicavi();
+  } else {
+    addBtn.innerHTML='<i class="bi bi-plus-lg"></i> Nuova Categoria Costo';
+    addBtn.onclick = ()=>openSqCatModal(null,'expense');
+    addBtn.style.display='';
+    renderCatCosti();
+  }
+}
+
+// ===================== ICON RENDER HELPER =====================
+function sqRenderIcon(icon, color, size='15px') {
+  if (!icon) return `<i class="bi bi-tag" style="color:${color||'#999'};font-size:${size}"></i>`;
+  if (!icon.startsWith('bi-')) return `<span style="font-size:${size};line-height:1">${icon}</span>`;
+  return `<i class="bi ${icon}" style="color:${color||'#999'};font-size:${size}"></i>`;
+}
+
+// ===================== CATEGORY MANAGEMENT =====================
+const SQ_BU_LABELS = {re:'Real Estate', cons:'Consulting', shared:'Shared / Group'};
+
+function renderCatRicavi() {
+  const cats = DB.incomeCategories || [];
+  const el = document.getElementById('cat-ricavi-content');
+  if (!cats.length) { el.innerHTML='<div class="empty"><i class="bi bi-tags"></i><p>Nessuna categoria ricavo.</p></div>'; return; }
+  el.innerHTML = `<div class="card tbl-wrap">
+    <table>
+      <thead><tr><th>Icona</th><th>Nome</th><th>BU</th><th>Colore</th><th>Tax-free</th><th class="r">Transazioni</th><th></th></tr></thead>
+      <tbody>${cats.map(c=>{
+        const txn = DB.transactions.filter(t=>t.category===c.id&&t.type==='income').length;
+        return `<tr>
+          <td style="text-align:center;font-size:18px">${sqRenderIcon(c.icon,c.color,'18px')}</td>
+          <td><strong>${c.label}</strong></td>
+          <td><span class="badge b-info" style="font-size:10px">${SQ_BU_LABELS[c.bu]||c.bu||'—'}</span></td>
+          <td><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:50%;background:${c.color};display:inline-block"></span>${c.color}</span></td>
+          <td>${c.taxFree?'<span class="badge" style="background:#e8f5ee;color:#2d6a4f">★ Tax-free</span>':'—'}</td>
+          <td class="r"><span class="badge b-neu">${txn}</span></td>
+          <td><button class="btn btn-s sm" onclick="openSqCatModal('${c.id}','income')"><i class="bi bi-pencil"></i></button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+function renderCatCosti() {
+  const cats = DB.expenseCategories || [];
+  const el = document.getElementById('cat-costi-content');
+  if (!cats.length) { el.innerHTML='<div class="empty"><i class="bi bi-tags"></i><p>Nessuna categoria costo.</p></div>'; return; }
+  el.innerHTML = `<div class="card tbl-wrap">
+    <table>
+      <thead><tr><th>Icona</th><th>Nome</th><th>BU</th><th>Colore</th><th class="r">Transazioni</th><th></th></tr></thead>
+      <tbody>${cats.map(c=>{
+        const txn = DB.transactions.filter(t=>t.category===c.id&&t.type==='expense').length;
+        return `<tr>
+          <td style="text-align:center;font-size:18px">${sqRenderIcon(c.icon,c.color,'18px')}</td>
+          <td><strong>${c.label}</strong></td>
+          <td><span class="badge b-warn" style="font-size:10px">${SQ_BU_LABELS[c.bu]||c.bu||'—'}</span></td>
+          <td><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:50%;background:${c.color};display:inline-block"></span>${c.color}</span></td>
+          <td class="r"><span class="badge b-neu">${txn}</span></td>
+          <td><button class="btn btn-s sm" onclick="openSqCatModal('${c.id}','expense')"><i class="bi bi-pencil"></i></button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+function openSqCatModal(id, type) {
+  const effectiveType = type || 'income';
+  document.getElementById('sqCatModal').classList.add('open');
+  document.getElementById('sqCatEditId').value = '';
+  document.getElementById('sqCatEditType').value = effectiveType;
+  document.getElementById('sqCatDelBtn').style.display = 'none';
+  document.getElementById('sqCatTaxFreeRow').style.display = effectiveType==='income' ? '' : 'none';
+  document.getElementById('sqCatTypeInc').classList.toggle('active', effectiveType==='income');
+  document.getElementById('sqCatTypeExp').classList.toggle('active', effectiveType==='expense');
+
+  if (id) {
+    const arr = effectiveType==='income' ? DB.incomeCategories : DB.expenseCategories;
+    const c = arr.find(x=>x.id===id);
+    if (!c) return;
+    document.getElementById('sqCatModalTitle').textContent = 'Modifica Categoria';
+    document.getElementById('sqCatEditId').value = c.id;
+    document.getElementById('sqCatLabel').value = c.label || '';
+    document.getElementById('sqCatIcon').value = c.icon || '';
+    document.getElementById('sqCatColor').value = c.color || '#C8963C';
+    document.getElementById('sqCatBu').value = c.bu || 'shared';
+    document.getElementById('sqCatTaxFree').checked = !!c.taxFree;
+    document.getElementById('sqCatDelBtn').style.display = 'flex';
+    previewSqCatIcon();
+  } else {
+    document.getElementById('sqCatModalTitle').textContent = effectiveType==='income' ? 'Nuova Categoria Ricavo' : 'Nuova Categoria Costo';
+    document.getElementById('sqCatLabel').value = '';
+    document.getElementById('sqCatIcon').value = '📦';
+    document.getElementById('sqCatColor').value = '#C8963C';
+    document.getElementById('sqCatBu').value = 'shared';
+    document.getElementById('sqCatTaxFree').checked = false;
+    document.getElementById('sqCatIconPreview').innerHTML = '📦';
+  }
+}
+
+function setSqCatType(type, el) {
+  document.getElementById('sqCatTypeInc').classList.remove('active');
+  document.getElementById('sqCatTypeExp').classList.remove('active');
+  el.classList.add('active');
+  document.getElementById('sqCatEditType').value = type;
+  document.getElementById('sqCatTaxFreeRow').style.display = type==='income' ? '' : 'none';
+}
+
+function previewSqCatIcon() {
+  const icon = document.getElementById('sqCatIcon').value.trim();
+  const color = document.getElementById('sqCatColor').value;
+  document.getElementById('sqCatIconPreview').innerHTML = sqRenderIcon(icon, color, '22px') || '?';
+}
+
+function closeSqCatModal() { document.getElementById('sqCatModal').classList.remove('open'); }
+
+function saveSqCat() {
+  const label = document.getElementById('sqCatLabel').value.trim();
+  if (!label) { alert('Inserisci un nome'); return; }
+  const type = document.getElementById('sqCatEditType').value;
+  const editId = document.getElementById('sqCatEditId').value;
+  const data = {
+    label,
+    icon: document.getElementById('sqCatIcon').value.trim() || '📦',
+    color: document.getElementById('sqCatColor').value,
+    bu: document.getElementById('sqCatBu').value,
+    taxFree: type==='income' ? document.getElementById('sqCatTaxFree').checked : false
+  };
+  const arr = type==='income' ? DB.incomeCategories : DB.expenseCategories;
+  if (editId) {
+    const c = arr.find(x=>x.id===editId);
+    if (c) Object.assign(c, data);
+  } else {
+    arr.push({id: uid(), ...data});
+  }
+  save(); closeSqCatModal();
+  if (type==='income') renderCatRicavi(); else renderCatCosti();
+}
+
+function deleteSqCat() {
+  const id = document.getElementById('sqCatEditId').value;
+  const type = document.getElementById('sqCatEditType').value;
+  const arr = type==='income' ? DB.incomeCategories : DB.expenseCategories;
+  const txn = DB.transactions.filter(t=>t.category===id).length;
+  const msg = txn > 0
+    ? `Questa categoria ha ${txn} transazioni collegate. Eliminarla comunque?`
+    : 'Eliminare questa categoria?';
+  if (!confirm(msg)) return;
+  if (type==='income') DB.incomeCategories = DB.incomeCategories.filter(c=>c.id!==id);
+  else DB.expenseCategories = DB.expenseCategories.filter(c=>c.id!==id);
+  save(); closeSqCatModal();
+  if (type==='income') renderCatRicavi(); else renderCatCosti();
+}
+
+// ===================== ICON PICKER (SEQUOIA) =====================
+const SQ_EMOJI_LIBRARY = {
+  'Finanza & Business': ['💰','💵','💶','💸','🏦','🪙','💳','📈','📉','📊','🧾','💹','🤑','💎','🏷️','🧮','📋','📁','🗂️','💼'],
+  'Immobiliare': ['🏠','🏡','🏘️','🏗️','🔑','🪟','🚪','🛋️','🛏️','🪴','🧹','🧺','🪣','🏊','🌇','🌆','🏢','🏬','🏨','🏩'],
+  'Consulting': ['🤝','📝','✏️','🖊️','📌','📎','🗓️','⚙️','🔧','🔨','🪛','💡','🧠','🎯','🏆','🥇','🎖️','🌐','📡','🔭'],
+  'Persone': ['👨‍💼','👩‍💼','👷','🧑‍💻','👨‍🏫','👩‍🔬','🧑‍🎨','👨‍🍳','👮','💂','🧑‍⚕️','👨‍👩‍👧','👶','🧒','🧓','👥','🫂','🤺','🧑‍🤝‍🧑','👫'],
+  'Spese': ['🛒','🧾','🏧','💸','🪙','💳','🔌','💡','🌊','🔥','📱','💻','🖥️','🖨️','📞','📠','✉️','📦','🚚','🏭'],
+  'Trasporti': ['✈️','🚗','🚂','🚌','🛵','🚲','⛽','🛞','🚕','🚁','⛵','🏍️','🚎','🛻','🚀','🛸','🛺','🚑','🚒','🚓'],
+  'Natura': ['🌳','🌿','🌸','🌻','🍀','🌊','🏔️','🌅','🌙','⭐','☀️','🌈','🍃','🌾','🌺','🦋','🌱','🍄','🌴','🏖️'],
+  'Varie': ['⭐','🎯','🎨','🎭','🎬','📺','📻','🎸','🎹','⚡','🔥','💡','🌐','🗺️','🧩','🎮','🏅','🎁','🎀','🎊'],
+};
+
+const SQ_BI_ICONS = [
+  'bi-house-fill','bi-house','bi-building','bi-building-fill','bi-buildings-fill','bi-bank','bi-bank2',
+  'bi-briefcase-fill','bi-briefcase','bi-person-workspace','bi-person-badge-fill','bi-people-fill',
+  'bi-graph-up-arrow','bi-graph-down-arrow','bi-bar-chart-fill','bi-pie-chart-fill','bi-currency-euro',
+  'bi-cash-stack','bi-credit-card-fill','bi-receipt','bi-receipt-cutoff','bi-wallet-fill',
+  'bi-award-fill','bi-trophy-fill','bi-star-fill','bi-bookmark-fill','bi-flag-fill','bi-gem',
+  'bi-tools','bi-wrench-adjustable-fill','bi-hammer','bi-gear-fill','bi-screwdriver','bi-lightning-fill',
+  'bi-car-front-fill','bi-airplane-fill','bi-train-front-fill','bi-bicycle','bi-truck-front-fill',
+  'bi-heart-fill','bi-shield-fill-check','bi-shield-fill','bi-lock-fill','bi-key-fill',
+  'bi-phone-fill','bi-laptop-fill','bi-tv-fill','bi-wifi','bi-router-fill','bi-printer-fill',
+  'bi-calendar-check-fill','bi-calendar-fill','bi-clock-fill','bi-alarm-fill',
+  'bi-file-earmark-fill','bi-folder-fill','bi-clipboard-fill','bi-journal-fill','bi-newspaper',
+  'bi-megaphone-fill','bi-chat-fill','bi-envelope-fill','bi-send-fill',
+  'bi-shop','bi-cart-fill','bi-basket-fill','bi-bag-fill','bi-percent',
+  'bi-stars','bi-cup-hot-fill','bi-cup-straw','bi-egg-fried',
+  'bi-tree-fill','bi-flower1','bi-sun-fill','bi-moon-fill','bi-cloud-fill',
+  'bi-mortarboard-fill','bi-pencil-fill','bi-pen-fill','bi-three-dots','bi-plus-circle-fill',
+];
+
+let sqIconPickerMode = 'emoji';
+
+function openSqIconPicker() {
+  sqIconPickerMode = 'emoji';
+  document.getElementById('sqIconSearch').value = '';
+  document.getElementById('sqIconPickerModal').classList.add('open');
+  renderSqIconGrid();
+}
+function closeSqIconPicker() { document.getElementById('sqIconPickerModal').classList.remove('open'); }
+
+function sqIconSection(mode, el) {
+  sqIconPickerMode = mode;
+  document.querySelectorAll('#sqIconTabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sqIconSearch').value = '';
+  renderSqIconGrid();
+}
+function filterSqIcons() { renderSqIconGrid(); }
+
+function renderSqIconGrid() {
+  const q = document.getElementById('sqIconSearch').value.toLowerCase();
+  const grid = document.getElementById('sqIconGrid');
+  if (sqIconPickerMode === 'emoji') {
+    let html = '';
+    Object.entries(SQ_EMOJI_LIBRARY).forEach(([section, emojis]) => {
+      const filtered = emojis.filter(e => !q || section.toLowerCase().includes(q));
+      if (!filtered.length) return;
+      html += `<div style="grid-column:1/-1;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);padding:8px 0 2px">${section}</div>`;
+      html += filtered.map(e => `<button onclick="pickSqIcon('${e}')" style="font-size:22px;height:40px;width:100%;border:1.5px solid transparent;background:none;cursor:pointer;border-radius:7px;transition:all .1s;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--gold-p)';this.style.borderColor='var(--gold)'" onmouseout="this.style.background='none';this.style.borderColor='transparent'">${e}</button>`).join('');
+    });
+    grid.innerHTML = html || '<div style="grid-column:1/-1;text-align:center;color:var(--text-3);padding:20px">Nessun risultato</div>';
+  } else {
+    const filtered = SQ_BI_ICONS.filter(i => !q || i.includes(q));
+    grid.innerHTML = filtered.map(i => `<button onclick="pickSqIcon('${i}')" title="${i}" style="font-size:18px;height:40px;width:100%;border:1.5px solid transparent;background:none;cursor:pointer;border-radius:7px;transition:all .1s;display:flex;align-items:center;justify-content:center;color:var(--text-2)" onmouseover="this.style.background='var(--gold-p)';this.style.borderColor='var(--gold)';this.style.color='var(--text)'" onmouseout="this.style.background='none';this.style.borderColor='transparent';this.style.color='var(--text-2)'"><i class="bi ${i}"></i></button>`).join('') || '<div style="grid-column:1/-1;text-align:center;color:var(--text-3);padding:20px">Nessun risultato</div>';
+  }
+}
+
+function pickSqIcon(icon) {
+  document.getElementById('sqCatIcon').value = icon;
+  previewSqCatIcon();
+  closeSqIconPicker();
+}
 </script>
 </body>
 </html>
